@@ -1,0 +1,42 @@
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.card {
+  position: absolute;
+  width: 100px;
+  aspect-ratio: 2.5/3.5;
+  background-color: white;
+  box-sizing: border-box;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.4), 0 4px 20px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  color: black;
+  transition: all 0.25s cubic-bezier(0.21, 1.35, 0.59, 1);
+  display: flex;
+  justify-content: flex-start;
+  padding: 4px;
+  font-size: 16px;
+}
+
+.card-value {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.button-container {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
