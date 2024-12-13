@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import "./App.css";
 import GameControls from "./components/GameControls";
 import GameBoard from "./components/GameBoard";
@@ -10,6 +10,7 @@ const initialState: State = {
 };
 
 function App() {
+  return <Test />;
   const [state, dispatch] = useReducer(gameReducer, initialState);
 
   // the cards are in a single array so that React can animate them
@@ -22,7 +23,7 @@ function App() {
 
   return (
     <div>
-      <GameBoard
+      GameBoard
         handCards={handCards}
         boardCards={boardCards}
         discardPile={discardPile}
@@ -37,6 +38,64 @@ function App() {
         dispatch={dispatch}
       />
     </div>
+  );
+}
+
+function useQueueState(state, setState) {
+  let queue = [];
+  
+  return (fn)=>{
+    const queueState = (state)=>queue.push(fn(state));
+    fn(queueState);
+  }
+}
+
+
+function Test() {
+  const [state, setState] = useState({
+    moving: false,
+    position: 0,
+    count: 0,
+  });
+
+  const asyncSetState = useQueueState(state, setState);
+
+  asyncSetState((queueState)=>{
+    queueState((state)=>({
+      ...state,
+      position: state.position + 10,
+    }));
+    queueState((state)=>({
+      ...state,
+      position: state.position + 10,
+    }));
+    queueState((state)=>({
+      ...state,
+      position: state.position + 10,
+    }));
+    queueState((state)=>({
+      ...state,
+      position: state.position + 10,
+    }));
+    queueState((state)=>({
+      ...state,
+      position: state.position + 10,
+    }));
+  });
+
+  return (
+    <>
+    <div
+      style={{
+        position: "relative",
+        left: state.position,
+        transition: "left 0.1s ease-in-out",
+      }}
+    >
+      Test
+      </div>
+      <button onClick={moveRight} disabled={state.moving}>Move Right 5 times</button>
+    </>
   );
 }
 
