@@ -2,6 +2,7 @@ import { Card } from "../reducers/gameReducer";
 import { Dispatch } from "react";
 import delay from "../utils/delay";
 import playSound from "../utils/playDealSound";
+import { evaluateHand } from '../services/scoreService';
 
 type GameControlsProps = {
   gameStarted: boolean;
@@ -9,6 +10,7 @@ type GameControlsProps = {
   selectedCards: Card[];
   deckCards: Card[];
   dispatch: Dispatch<{ type: string; payload: unknown }>;
+  scoreDispatch: Dispatch<{ type: string; payload: any; }>;
 };
 
 function GameControls({
@@ -17,6 +19,7 @@ function GameControls({
   selectedCards,
   deckCards,
   dispatch,
+  scoreDispatch,
 }: GameControlsProps) {
   function drawCards(cards: number): Promise<void> {
     return new Promise((resolve) => {
@@ -96,17 +99,37 @@ function GameControls({
 
   // const canReset = deckCards.length === 0 && handCards.length === 0;
 
+  async function handlePlayCards(cards: Card[]) {
+    // Evaluate the hand before playing it
+    const evaluation = evaluateHand(cards);
+    
+    // If it's a valid hand, play it and update score
+    if (evaluation.handType) {
+      await playCards(cards);
+      scoreDispatch({
+        type: 'UPDATE_SCORE',
+        payload: {
+          points: evaluation.score,
+          handType: evaluation.handType
+        }
+      });
+      await delay(500);
+      await discardCards(cards);
+      await delay(250);
+      await drawCards(cards.length);
+    } else {
+      // Optionally: Show an error message that this isn't a valid hand
+      console.log('Not a valid hand');
+    }
+  }
+
   function renderButtons() {
     return (
       <>
         <button
           onClick={async () => {
             const selectedCards = handCards.filter((card) => card.selected);
-            await playCards(selectedCards);
-            await delay(500);
-            await discardCards(selectedCards);
-            await delay(250);
-            await drawCards(selectedCards.length);
+            await handlePlayCards(selectedCards);
           }}
           disabled={selectedCards.length === 0}
         >
