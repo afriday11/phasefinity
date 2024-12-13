@@ -19,6 +19,7 @@
   padding: 4px;
   font-size: 16px;
   transform-origin: top center;
+  cursor: pointer;
 }
 
 .card-value {

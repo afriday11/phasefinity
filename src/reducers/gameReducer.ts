@@ -41,37 +41,6 @@ const gameReducer = createReducer({
     return { ...state, cards: [...state.cards, ...payload] };
   },
 
-  MOVE_CARD_TO_RANDOM_POSITION: (
-    state: State,
-    payload: { id: number }
-  ): State => {
-    return {
-      ...state,
-      cards: state.cards.map((card) =>
-        card.id === payload.id
-          ? {
-              ...card,
-              position: Math.random() < 0.5 ? "hand" : "board",
-            }
-          : card
-      ),
-    };
-  },
-
-  SWAP_CARD_POSITION: (state: State, payload: { id: number }): State => {
-    return {
-      ...state,
-      cards: state.cards.map((card) =>
-        card.id === payload.id
-          ? {
-              ...card,
-              position: card.position === "hand" ? "board" : "hand",
-            }
-          : card
-      ),
-    };
-  },
-
   SELECT_CARD: (state: State, payload: { id: number }): State => {
     return {
       ...state,
@@ -153,6 +122,17 @@ const gameReducer = createReducer({
         position: "deck",
         selected: false,
       })),
+    };
+  },
+
+  SORT_HAND: (state: State): State => {
+    const handCards = state.cards.filter((card) => card.position === "hand");
+    const otherCards = state.cards.filter((card) => card.position !== "hand");
+    handCards.sort((a, b) => b.value - a.value);
+    handCards.sort((a, b) => a.suit.localeCompare(b.suit));
+    return {
+      ...state,
+      cards: [...handCards, ...otherCards],
     };
   },
 });

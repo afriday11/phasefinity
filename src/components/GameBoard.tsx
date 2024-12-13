@@ -1,6 +1,7 @@
 import { Card as CardType } from "../reducers/gameReducer";
 import Card from "./Card";
 import { Dispatch } from "react";
+import useWindowSize from "../utils/useWindowSize";
 
 type GameBoardProps = {
   handCards: CardType[];
@@ -17,6 +18,8 @@ function GameBoard({
   deckCards,
   dispatch,
 }: GameBoardProps) {
+  useWindowSize();
+
   function renderHand(
     cards: CardType[],
     yOffset: number,
@@ -69,8 +72,8 @@ function GameBoard({
   const cards = [
     ...renderHand(handCards, 250, true, "bottom"),
     ...renderHand(boardCards, 500, true, "bottom"),
-    ...renderHand(discardPile, -200, false, "top"),
-    ...renderHand(deckCards, -100, false, "bottom"),
+    ...renderHand(discardPile, -100, false, "top"),
+    ...renderHand(deckCards, 0, false, "bottom"),
   ];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -129,7 +129,7 @@ function GameControls({
             dispatch({ type: "SHUFFLE_DECK", payload: null });
             await drawCards(5);
           }}
-          disabled={!canReset}
+          // disabled={!canReset}
         >
           {gameStarted ? "Reset" : "New Game"}
         </button>
