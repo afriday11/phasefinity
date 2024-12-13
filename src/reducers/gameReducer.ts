@@ -12,6 +12,7 @@ export interface Card {
 }
 
 export interface State {
+  gameStarted: boolean;
   cards: Card[];
 }
 
@@ -19,6 +20,7 @@ const gameReducer = createReducer({
   INITIALIZE_GAME: (state: State): State => {
     return {
       ...state,
+      gameStarted: true,
       cards: standardDeck.map((card) => ({
         id: Math.floor(Math.random() * 1000000),
         value: card.value,

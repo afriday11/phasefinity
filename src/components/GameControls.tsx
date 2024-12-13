@@ -1,8 +1,10 @@
 import { Card } from "../reducers/gameReducer";
-import { Dispatch } from "react";
+import { Dispatch, useEffect } from "react";
 import delay from "../utils/delay";
+import playSound from "../utils/playDealSound";
 
 type GameControlsProps = {
+  gameStarted: boolean;
   handCards: Card[];
   selectedCards: Card[];
   deckCards: Card[];
@@ -10,6 +12,7 @@ type GameControlsProps = {
 };
 
 function GameControls({
+  gameStarted,
   handCards,
   selectedCards,
   deckCards,
@@ -17,20 +20,29 @@ function GameControls({
 }: GameControlsProps) {
   function drawCards(cards: number): Promise<void> {
     return new Promise((resolve) => {
-      for (let i = 0; i < cards; i++) {
+      // this is a bit of a hack because when we automatically
+      // reset the game, the deck isn't full yet in this closure
+      // but we know it will be once the dispatch has been sent.
+      // but we also want to ensure we dont play sounds when
+      // there are no cards to draw before a reset.
+      const count =
+        deckCards.length > 0 || handCards.length > 0
+          ? Math.min(cards, deckCards.length)
+          : cards;
+
+      for (let i = 0; i < count; i++) {
         setTimeout(() => {
+          playSound();
           dispatch({
             type: "DRAW_CARD",
             payload: null,
           });
 
-          // Resolve the promise after the last card is drawn
           if (i === cards - 1) {
             resolve();
           }
         }, i * 100);
       }
-      // If no cards to draw, resolve immediately
       if (cards === 0) {
         resolve();
       }
@@ -42,20 +54,19 @@ function GameControls({
       let totalDiscarded = 0;
       for (let i = 0; i < cards.length; i++) {
         setTimeout(() => {
+          playSound();
           dispatch({
             type: "DISCARD_CARD",
             payload: cards[cards.length - 1 - i],
           });
           totalDiscarded++;
 
-          // Move the resolution check inside the timeout callback
           if (totalDiscarded === cards.length) {
             resolve();
           }
         }, i * 100);
       }
 
-      // If no cards to discard, resolve immediately
       if (cards.length === 0) {
         resolve();
       }
@@ -66,61 +77,67 @@ function GameControls({
     return new Promise((resolve) => {
       for (let i = 0; i < cards.length; i++) {
         setTimeout(() => {
+          playSound();
           dispatch({
             type: "PLAY_CARD",
             payload: cards[i],
           });
-          // Resolve the promise after the last card is played
           if (i === cards.length - 1) {
             resolve();
           }
         }, i * 100);
       }
 
-      // If no cards to play, resolve immediately
       if (cards.length === 0) {
         resolve();
       }
     });
   }
 
-  return (
-    <div className="button-container">
-      <button
-        onClick={async () => {
-          const selectedCards = handCards.filter((card) => card.selected);
-          await playCards(selectedCards);
-          await delay(500);
-          await discardCards(selectedCards);
-          await drawCards(selectedCards.length);
-        }}
-        disabled={selectedCards.length === 0}
-      >
-        Play Hand
-      </button>
-      <button
-        onClick={async () => {
-          const selectedCards = handCards.filter((card) => card.selected);
-          await discardCards(selectedCards);
-          await delay(200);
-          await drawCards(selectedCards.length);
-        }}
-        disabled={selectedCards.length === 0}
-      >
-        Discard
-      </button>
-      <button
-        onClick={async () => {
-          dispatch({ type: "RESET", payload: null });
-          dispatch({ type: "SHUFFLE_DECK", payload: null });
-          await drawCards(5);
-        }}
-        disabled={deckCards.length !== 0}
-      >
-        Reset
-      </button>
-    </div>
-  );
+  const canReset = deckCards.length === 0 && handCards.length === 0;
+
+  function renderButtons() {
+    return (
+      <>
+        <button
+          onClick={async () => {
+            const selectedCards = handCards.filter((card) => card.selected);
+            await playCards(selectedCards);
+            await delay(500);
+            await discardCards(selectedCards);
+            await delay(250);
+            await drawCards(selectedCards.length);
+          }}
+          disabled={selectedCards.length === 0}
+        >
+          Play Hand
+        </button>
+        <button
+          onClick={async () => {
+            const selectedCards = handCards.filter((card) => card.selected);
+            await discardCards(selectedCards);
+            await delay(200);
+            await drawCards(selectedCards.length);
+          }}
+          disabled={selectedCards.length === 0}
+        >
+          Discard
+        </button>
+        <button
+          onClick={async () => {
+            dispatch({ type: "INITIALIZE_GAME", payload: null });
+            dispatch({ type: "SHUFFLE_DECK", payload: null });
+            await drawCards(5);
+          }}
+          disabled={!canReset}
+        >
+          {gameStarted ? "Reset" : "New Game"}
+        </button>
+      </>
+    );
+  }
+
+  return <div className="button-container">{renderButtons()}</div>;
 }
 
 export default GameControls;

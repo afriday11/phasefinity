@@ -1,35 +1,16 @@
 import { useReducer } from "react";
 import "./App.css";
-import useMount from "./utils/useMount";
 import GameControls from "./components/GameControls";
 import GameBoard from "./components/GameBoard";
 import gameReducer, { State } from "./reducers/gameReducer";
 
 const initialState: State = {
+  gameStarted: false,
   cards: [],
 };
 
 function App() {
   const [state, dispatch] = useReducer(gameReducer, initialState);
-
-  useMount(() => {
-    dispatch({
-      type: "INITIALIZE_GAME",
-      payload: null,
-    });
-    dispatch({
-      type: "SHUFFLE_DECK",
-      payload: null,
-    });
-    for (let i = 0; i < 6; i++) {
-      setTimeout(() => {
-        dispatch({
-          type: "DRAW_CARD",
-          payload: null,
-        });
-      }, i * 100);
-    }
-  });
 
   // the cards are in a single array so that React can animate them
   // so we need to filter them out into separate arrays for each position
@@ -49,6 +30,7 @@ function App() {
         dispatch={dispatch}
       />
       <GameControls
+        gameStarted={state.gameStarted}
         handCards={handCards}
         selectedCards={selectedCards}
         deckCards={deckCards}
