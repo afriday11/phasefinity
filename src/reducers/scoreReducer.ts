@@ -1,4 +1,4 @@
-import { ScoreState, ScoreAction } from '../types/scoreTypes';
+import { ScoreState, ScoreAction, HandType } from '../types/scoreTypes';
 import createReducer from '../utils/createReducer';
 
 export const initialScoreState: ScoreState = {
