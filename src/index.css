@@ -7,6 +7,10 @@
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
+  background-image: url("feltbg.jpg");
+  background-size: contain;
+  /* background-repeat: no-repeat; */
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
