@@ -13,15 +13,15 @@ function App() {
   const [state, dispatch] = useReducer(gameReducer, initialState);
 
   useMount(() => {
-    for (let i = 0; i < 5; i++) {
-      dispatch({
-        type: "INITIALIZE_GAME",
-        payload: null,
-      });
-      dispatch({
-        type: "SHUFFLE_DECK",
-        payload: null,
-      });
+    dispatch({
+      type: "INITIALIZE_GAME",
+      payload: null,
+    });
+    dispatch({
+      type: "SHUFFLE_DECK",
+      payload: null,
+    });
+    for (let i = 0; i < 6; i++) {
       setTimeout(() => {
         dispatch({
           type: "DRAW_CARD",

@@ -17,6 +17,7 @@
   justify-content: flex-start;
   padding: 4px;
   font-size: 16px;
+  transform-origin: top center;
 }
 
 .card-value {
@@ -24,11 +25,12 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .button-container {
   position: absolute;
+  z-index: 100;
   width: 100%;
   bottom: 0;
   left: 0;
