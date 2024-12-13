@@ -48,3 +48,38 @@ export default tseslint.config({
   },
 })
 ```
+
+Update notes for 12/12/2024
+# **Score System Implementation**
+
+Added initial scoring system with proper separation of concerns. This lays the groundwork for implementing game rules and scoring logic.
+
+## **New Files Added**
+
+### **src/services/scoreService.ts**
+
+- Pure TypeScript service for score calculations
+- Handles hand evaluation and point calculations
+- Isolated from React components for better testing
+- Currently contains placeholder logic for hand evaluation
+
+### **src/components/ScoreDisplay.tsx**
+
+- New React component for score visualization
+- Shows current score, high score, and last play details
+- Highlights recent scoring events
+- Styled to match existing game UI
+
+### **Updates to src/App.tsx**
+
+- Added separate score reducer alongside game reducer
+- Integrated ScoreDisplay component
+- Modified GameControls props to handle score dispatch
+- Maintains separation between game state and score state
+
+## **Architecture Decisions**
+
+- Kept scoring logic separate from game mechanics
+- Used TypeScript interfaces for type safety
+- Followed existing reducer pattern from the codebase
+- Maintained single responsibility principle

@@ -1,0 +1,44 @@
+.score-display {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  font-size: 16px;
+  z-index: 100;
+  min-width: 150px;
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 5px 0;
+}
+
+.score-item--highlight {
+  color: #ffd700;
+  font-weight: bold;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.score-label {
+  opacity: 0.8;
+}
+
+.score-value {
+  font-weight: bold;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
