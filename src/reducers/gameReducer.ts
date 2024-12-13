@@ -107,9 +107,15 @@ const gameReducer = createReducer({
   },
 
   SHUFFLE_DECK: (state: State): State => {
+    const cards = [...state.cards];
+    // Fisher-Yates shuffle algorithm
+    for (let i = cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cards[i], cards[j]] = [cards[j], cards[i]]; // swap elements
+    }
     return {
       ...state,
-      cards: state.cards.sort(() => Math.random() - 0.5),
+      cards,
     };
   },
 
