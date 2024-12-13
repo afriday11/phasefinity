@@ -1,7 +1,7 @@
 import { Card as CardType } from "../reducers/gameReducer";
 import Card from "./Card";
 import { Dispatch } from "react";
-import useWindowSize from "../utils/useWindowSize";
+import useWindowSize from "../hooks/useWindowSize";
 
 type GameBoardProps = {
   handCards: CardType[];
