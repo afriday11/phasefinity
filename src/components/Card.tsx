@@ -27,6 +27,13 @@ function Card({ card, zIndex, position, rotation, ...props }: cardProps) {
     spades: "♠",
   }[card.suit];
 
+  const color = {
+    hearts: "rgb(184, 41, 60)",
+    diamonds: "rgb(184, 41, 60)",
+    clubs: "rgb(29, 39, 59)",
+    spades: "rgb(29, 39, 59)",
+  }[card.suit];
+
   return (
     <div
       key={card.id}
@@ -40,6 +47,7 @@ function Card({ card, zIndex, position, rotation, ...props }: cardProps) {
         zIndex: zIndex,
         opacity:
           card.position === "discard" || card.position === "deck" ? 0 : 1,
+        color: color,
       }}
       {...props}
     >

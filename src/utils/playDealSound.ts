@@ -3,7 +3,7 @@ import cardDrawSound2 from "/dealcard2.mp3";
 // import cardDrawSound3 from "/dealcard3.mp3";
 
 const soundPool: HTMLAudioElement[] = [];
-const soundPoolSize = 10;
+const soundPoolSize = 5;
 let currentSoundIndex = 0;
 
 for (let i = 0; i < soundPoolSize; i++) {
