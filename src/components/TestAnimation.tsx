@@ -4,6 +4,7 @@ import useAnimation from "../hooks/useAnimation";
 type stateType = {
   moving: boolean;
   position: number;
+  position2: number;
   count: number;
 };
 
@@ -11,37 +12,56 @@ function TestAnimation() {
   const [state, setState] = useState<stateType>({
     moving: false,
     position: 0,
+    position2: 0,
     count: 0,
   });
 
   const animate = useAnimation<stateType>(setState);
-  const animation = () =>
-    animate((setState) => {
-      // initialize the start position and set moving to true
-      // to prevent user input while the animation is running
-      setState((state) => ({
+
+  const animation = () => {
+    animate(
+      (setFrame) => {
+        setFrame(
+          (state) => ({
+            ...state,
+            position: 200,
+          }),
+          500
+        );
+
+        setFrame(
+          (state) => ({
+            ...state,
+            position: 0,
+          }),
+          500
+        );
+      },
+      // queueId is optional, if not provided, it will be generated automatically
+      // this lets us keep appending to the same queue
+      "TestAnimation"
+    );
+  };
+
+  const animate2 = () => {
+    animate((setFrame) => {
+      setFrame((state) => ({
         ...state,
-        position: 0,
-        moving: true,
+        position2: 0,
       }));
 
       // play a sequence of moves
       for (let i = 0; i < 5; i++) {
-        setState(
+        setFrame(
           (state) => ({
             ...state,
-            position: state.position + 20,
+            position2: state.position2 + 20,
           }),
           100
         );
       }
-
-      // set moving to false to allow user input again
-      setState((state) => ({
-        ...state,
-        moving: false,
-      }));
-    });
+    }, "TestAnimation2");
+  };
 
   return (
     <>
@@ -49,12 +69,24 @@ function TestAnimation() {
         style={{
           position: "relative",
           left: state.position,
-          transition: "left 0.1s ease-in-out",
+          transition: "left 0.5s ease-in-out",
         }}
       >
         Test
       </div>
+      <div
+        style={{
+          position: "relative",
+          left: state.position2,
+          transition: "left 0.1s ease-in-out",
+        }}
+      >
+        Test2
+      </div>
       <button onClick={() => animation()} disabled={state.moving}>
+        Move Right 10 times
+      </button>
+      <button onClick={() => animate2()} disabled={state.moving}>
         Move Right 10 times
       </button>
     </>
