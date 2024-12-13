@@ -1,4 +1,4 @@
-import { useReducer, useState, useEffect, useRef, Dispatch } from "react";
+import { useReducer, useEffect, useRef, Dispatch } from "react";
 import "./App.css";
 
 type boardPositions = "hand" | "board" | "discard" | "deck";
