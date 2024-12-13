@@ -1,5 +1,5 @@
 import { Card } from "../reducers/gameReducer";
-import { Dispatch, useEffect } from "react";
+import { Dispatch } from "react";
 import delay from "../utils/delay";
 import playSound from "../utils/playDealSound";
 
@@ -93,8 +93,6 @@ function GameControls({
       }
     });
   }
-
-  const canReset = deckCards.length === 0 && handCards.length === 0;
 
   function renderButtons() {
     return (

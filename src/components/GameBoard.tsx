@@ -32,6 +32,9 @@ function GameBoard({
 
     const anchoredYOffset = anchor === "top" ? yOffset : screenHeight - yOffset;
 
+    // cards.sort((a, b) => b.value - a.value);
+    // cards.sort((a, b) => a.suit.localeCompare(b.suit));
+
     return cards.map((card, index) => {
       const cardPosition = splayed
         ? index * cardSpacing + cardSpacing / 2 - xOffset

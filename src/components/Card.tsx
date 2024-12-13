@@ -40,7 +40,6 @@ function Card({ card, zIndex, position, rotation, ...props }: cardProps) {
         zIndex: zIndex,
         opacity:
           card.position === "discard" || card.position === "deck" ? 0 : 1,
-        // transition: "transform 300ms ease-in-out",
       }}
       {...props}
     >
@@ -52,7 +51,7 @@ function Card({ card, zIndex, position, rotation, ...props }: cardProps) {
           left: 4,
         }}
       >
-        <span>{card.value}</span>
+        <span>{card.label}</span>
         <span className="noto-emoji-phasefinity">{emoji}</span>
       </span>
       <span

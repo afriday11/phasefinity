@@ -5,7 +5,8 @@ export type boardPositions = "hand" | "board" | "discard" | "deck";
 
 export interface Card {
   id: number;
-  value: string;
+  label: string;
+  value: number;
   suit: string;
   position: boardPositions;
   selected: boolean;
@@ -23,6 +24,7 @@ const gameReducer = createReducer({
       gameStarted: true,
       cards: standardDeck.map((card) => ({
         id: Math.floor(Math.random() * 1000000),
+        label: card.label,
         value: card.value,
         suit: card.suit,
         position: "deck",
