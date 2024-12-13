@@ -7,8 +7,9 @@
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
-  background-image: url("feltbg.jpg");
-  background-size: contain;
+  background-image: url("/feltbg.jpg");
+  /* background-size: contain; */
+  background-size: 600px;
   /* background-repeat: no-repeat; */
 
   font-synthesis: none;
