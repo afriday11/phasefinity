@@ -1,5 +1,5 @@
-import { Card } from '../reducers/gameReducer';
-import { HandType } from '../types/scoreTypes';
+import { Card } from "../reducers/gameReducer";
+import { HandType } from "../types/scoreTypes";
 
 interface HandEvaluation {
   handType: HandType;
@@ -21,7 +21,7 @@ function hasStraight(values: number[]): boolean {
 
 function hasFlush(cards: Card[]): boolean {
   if (cards.length < 5) return false; // A flush requires at least 5 cards
-  return cards.every(card => card.suit === cards[0].suit);
+  return cards.every((card) => card.suit === cards[0].suit);
 }
 
 export function isValidHandSize(cards: Card[]): boolean {
@@ -31,11 +31,11 @@ export function isValidHandSize(cards: Card[]): boolean {
 
 export function evaluateHand(cards: Card[]): HandEvaluation {
   if (cards.length === 0) {
-    return { handType: 'highCard', score: 0 };
+    return { handType: "highCard", score: 0 };
   }
 
   // Get the highest card value for scoring
-  const highestCard = Math.max(...cards.map(card => card.value));
+  const highestCard = Math.max(...cards.map((card) => card.value));
 
   // Count occurrences of each value
   const valueCounts = cards.reduce((acc, card) => {
@@ -45,53 +45,56 @@ export function evaluateHand(cards: Card[]): HandEvaluation {
 
   const values = Object.values(valueCounts);
   const uniqueValues = Object.keys(valueCounts).map(Number);
-  
+
   // Check for different hand types
   const isStraight = hasStraight(uniqueValues);
   const isFlush = hasFlush(cards);
 
   // Evaluate hand type from best to worst
   if (isStraight && isFlush) {
-    return { handType: 'straightFlush', score: calculateScore('straightFlush', highestCard) };
+    return {
+      handType: "straightFlush",
+      score: calculateScore("straightFlush"),
+    };
   }
 
   if (values.includes(4)) {
-    return { handType: 'fourOfAKind', score: calculateScore('fourOfAKind', highestCard) };
+    return { handType: "fourOfAKind", score: calculateScore("fourOfAKind") };
   }
 
   if (values.includes(3) && values.includes(2)) {
-    return { handType: 'fullHouse', score: calculateScore('fullHouse', highestCard) };
+    return { handType: "fullHouse", score: calculateScore("fullHouse") };
   }
 
   if (isFlush) {
-    return { handType: 'flush', score: calculateScore('flush', highestCard) };
+    return { handType: "flush", score: calculateScore("flush") };
   }
 
   if (isStraight) {
-    return { handType: 'straight', score: calculateScore('straight', highestCard) };
+    return { handType: "straight", score: calculateScore("straight") };
   }
 
   if (values.includes(3)) {
-    return { handType: 'threeOfAKind', score: calculateScore('threeOfAKind', highestCard) };
+    return { handType: "threeOfAKind", score: calculateScore("threeOfAKind") };
   }
 
-  if (values.filter(count => count === 2).length === 2) {
-    return { handType: 'twoPair', score: calculateScore('twoPair', highestCard) };
+  if (values.filter((count) => count === 2).length === 2) {
+    return { handType: "twoPair", score: calculateScore("twoPair") };
   }
 
   if (values.includes(2)) {
-    return { handType: 'pair', score: calculateScore('pair', highestCard) };
+    return { handType: "pair", score: calculateScore("pair") };
   }
 
   // Fallback to high card if no other hand type matches
-  return { 
-    handType: 'highCard', 
-    score: calculateScore('highCard', highestCard),
-    highCard: highestCard 
+  return {
+    handType: "highCard",
+    score: calculateScore("highCard"),
+    highCard: highestCard,
   };
 }
 
-export function calculateScore(handType: HandType, highestCard?: number): number {
+export function calculateScore(handType: HandType): number {
   const scoreValues = {
     highCard: 1, // Add a base score for highCard if needed
     pair: 10,
@@ -101,7 +104,7 @@ export function calculateScore(handType: HandType, highestCard?: number): number
     flush: 50,
     fullHouse: 60,
     fourOfAKind: 70,
-    straightFlush: 100
+    straightFlush: 100,
   };
 
   // Optionally use highestCard for additional scoring logic

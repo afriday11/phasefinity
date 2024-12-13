@@ -1,6 +1,5 @@
-import React from 'react';
-import { ScoreState } from '../types/scoreTypes';
-import './ScoreDisplay.css';
+import { ScoreState } from "../types/scoreTypes";
+import "./ScoreDisplay.css";
 
 interface ScoreDisplayProps {
   score: ScoreState;

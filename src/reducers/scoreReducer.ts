@@ -1,27 +1,30 @@
-import { ScoreState, ScoreAction, HandType } from '../types/scoreTypes';
-import createReducer from '../utils/createReducer';
+import { ScoreState, HandType } from "../types/scoreTypes";
+import createReducer from "../utils/createReducer";
 
 export const initialScoreState: ScoreState = {
   currentScore: 0,
   highScore: 0,
   lastPlayScore: 0,
   lastPlayType: null,
-  roundNumber: 1
+  roundNumber: 1,
 };
 
 const scoreReducer = createReducer({
-  UPDATE_SCORE: (state: ScoreState, payload: { points: number; handType: HandType }): ScoreState => {
+  UPDATE_SCORE: (
+    state: ScoreState,
+    payload: { points: number; handType: HandType }
+  ): ScoreState => {
     const newCurrentScore = state.currentScore + payload.points;
     return {
       ...state,
       currentScore: newCurrentScore,
       highScore: Math.max(newCurrentScore, state.highScore),
       lastPlayScore: payload.points,
-      lastPlayType: payload.handType
+      lastPlayType: payload.handType,
     };
   },
 
-  RESET_SCORE: (state: ScoreState): ScoreState => {
+  RESET_SCORE: (): ScoreState => {
     return initialScoreState;
   },
 
@@ -30,9 +33,9 @@ const scoreReducer = createReducer({
       ...state,
       roundNumber: state.roundNumber + 1,
       lastPlayScore: 0,
-      lastPlayType: null
+      lastPlayType: null,
     };
-  }
+  },
 });
 
 export default scoreReducer;
