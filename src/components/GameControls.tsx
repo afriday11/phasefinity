@@ -94,7 +94,7 @@ function GameControls({
     });
   }
 
-  const canReset = deckCards.length === 0 && handCards.length === 0;
+  // const canReset = deckCards.length === 0 && handCards.length === 0;
 
   function renderButtons() {
     return (
