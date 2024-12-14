@@ -71,7 +71,7 @@ function Card({ card, zIndex, position, rotation, ...props }: cardProps) {
           transform: `rotate(180deg)`,
         }}
       >
-        <span>{card.value}</span>
+        <span>{card.label}</span>
         <span className="noto-emoji-phasefinity">{emoji}</span>
       </span>
       <div
