@@ -97,7 +97,9 @@ const gameReducer = createReducer({
     return {
       ...state,
       cards: state.cards.map((card) =>
-        card.id === payload.id ? { ...card, position: "discard" } : card
+        card.id === payload.id
+          ? { ...card, selected: false, position: "discard" }
+          : card
       ),
     };
   },
@@ -106,7 +108,9 @@ const gameReducer = createReducer({
     return {
       ...state,
       cards: state.cards.map((card) =>
-        payload.includes(card) ? { ...card, position: "discard" } : card
+        payload.some((p) => p.id === card.id)
+          ? { ...card, position: "discard" }
+          : card
       ),
     };
   },

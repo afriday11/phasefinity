@@ -4,27 +4,27 @@ import { Dispatch } from "react";
 import useWindowSize from "../hooks/useWindowSize";
 
 type GameBoardProps = {
+  cardState: CardState;
+  dispatch: Dispatch<{ type: string; payload: unknown }>;
+};
+
+type CardState = {
   handCards: CardType[];
   boardCards: CardType[];
   discardPile: CardType[];
   deckCards: CardType[];
-  dispatch: Dispatch<{ type: string; payload: unknown }>;
+  selectedCards: CardType[];
 };
 
-function GameBoard({
-  handCards,
-  boardCards,
-  discardPile,
-  deckCards,
-  dispatch,
-}: GameBoardProps) {
+function GameBoard({ cardState, dispatch }: GameBoardProps) {
   useWindowSize();
 
   function renderHand(
     cards: CardType[],
     yOffset: number,
     splayed: boolean = false,
-    anchor: "top" | "bottom" = "top"
+    anchor: "top" | "bottom" = "top",
+    onClick?: () => void
   ) {
     const cardWidth = 100;
     const screenWidth = window.innerWidth;
@@ -58,22 +58,24 @@ function GameBoard({
           zIndex={index}
           position={{ x, y }}
           rotation={cardRotation}
-          onClick={() =>
-            dispatch({
-              type: "TOGGLE_CARD_SELECTION",
-              payload: { id: card.id },
-            })
-          }
+          onClick={onClick}
         />
       );
     });
   }
 
+  const handleCardClick = (card: CardType) => {
+    dispatch({
+      type: "TOGGLE_CARD_SELECTION",
+      payload: { id: card.id },
+    });
+  };
+
   const cards = [
-    ...renderHand(handCards, 250, true, "bottom"),
-    ...renderHand(boardCards, 500, true, "bottom"),
-    ...renderHand(discardPile, -100, false, "top"),
-    ...renderHand(deckCards, 0, false, "bottom"),
+    ...renderHand(cardState.handCards, 250, true, "bottom", handleCardClick),
+    ...renderHand(cardState.boardCards, 500, true, "bottom"),
+    ...renderHand(cardState.discardPile, -100, false, "top"),
+    ...renderHand(cardState.deckCards, 0, false, "bottom"),
   ];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

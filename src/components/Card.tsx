@@ -6,10 +6,17 @@ type cardProps = {
   zIndex: number;
   position: { x: number; y: number };
   rotation: number;
-  onClick: () => void;
+  onClick?: (card: CardType) => void;
 };
 
-function Card({ card, zIndex, position, rotation, ...props }: cardProps) {
+function Card({
+  card,
+  zIndex,
+  position,
+  rotation,
+  onClick,
+  ...props
+}: cardProps) {
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
@@ -49,6 +56,7 @@ function Card({ card, zIndex, position, rotation, ...props }: cardProps) {
           card.position === "discard" || card.position === "deck" ? 0 : 1,
         color: color,
       }}
+      onMouseDown={() => onClick && onClick(card)}
       {...props}
     >
       <span
