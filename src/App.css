@@ -68,4 +68,5 @@
   padding-bottom: max(env(safe-area-inset-bottom), 10px);
   /* margin-bottom: 10px; */
   box-sizing: border-box;
+  transition: bottom 0.35s cubic-bezier(0.33, 1.41, 0.59, 1);
 }

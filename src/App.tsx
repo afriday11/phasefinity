@@ -10,6 +10,7 @@ import useDealer from "./hooks/useDealer";
 
 const initialState: State = {
   gameStarted: false,
+  allowInput: true,
   cards: [],
 };
 
@@ -20,6 +21,8 @@ function App() {
     initialScoreState
   );
   const { cards, isDealing } = useDealer(gameState.cards);
+
+  const canInteract = gameState.allowInput;
 
   // the cards are in a single array so that React can animate them
   // so we need to filter them out into separate arrays for each position
@@ -36,7 +39,7 @@ function App() {
   const cardState = getCardState();
 
   const handEvaluation =
-    selectedCards.length > 0 && evaluateHand(selectedCards);
+    cardState.selectedCards.length > 0 && evaluateHand(cardState.selectedCards);
 
   function renderHandEvaluation() {
     return (
@@ -59,11 +62,9 @@ function App() {
     <div>
       {gameState.gameStarted && <ScoreDisplay score={scoreState} />}
       {handEvaluation && renderHandEvaluation()}
-      <div style={{ position: "absolute", top: 0, left: 0 }}>
-        {isDealing ? "dealing" : "not dealing"}
-      </div>
       <GameBoard cardState={cardState} dispatch={gameDispatch} />
       <GameControls
+        disabled={canInteract}
         gameStarted={gameState.gameStarted}
         cardState={cardState}
         dispatch={gameDispatch}

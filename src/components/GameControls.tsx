@@ -4,6 +4,7 @@ import delay from "../utils/delay";
 import { evaluateHand } from "../services/scoreService";
 
 type GameControlsProps = {
+  disabled: boolean;
   gameStarted: boolean;
   cardState: CardState;
   dispatch: Dispatch<{ type: string; payload: unknown }>;
@@ -19,12 +20,13 @@ type CardState = {
 };
 
 function GameControls({
+  disabled,
   gameStarted,
   cardState,
   dispatch,
   scoreDispatch,
 }: GameControlsProps) {
-  const { selectedCards } = cardState;
+  const { selectedCards, handCards, deckCards } = cardState;
 
   async function handlePlayCards() {
     const evaluation = evaluateHand(selectedCards);
@@ -85,17 +87,31 @@ function GameControls({
           Discard
         </button>
 
-        <button
-          onClick={handleResetGame}
-          // disabled={!canReset}
-        >
-          {gameStarted ? "Reset" : "New Game"}
-        </button>
+        {renderResetButton()}
       </>
     );
   }
 
-  return <div className="button-container">{renderButtons()}</div>;
+  function renderResetButton() {
+    if ((handCards.length || deckCards.length) && gameStarted) return null;
+    return (
+      <button onClick={handleResetGame}>
+        {gameStarted ? "Reset" : "New Game"}
+      </button>
+    );
+  }
+
+  return (
+    <div
+      className="button-container"
+      style={{
+        // opacity: disabled ? 0.5 : 1,
+        bottom: disabled ? 0 : -100,
+      }}
+    >
+      {renderButtons()}
+    </div>
+  );
 }
 
 export default GameControls;
