@@ -14,6 +14,7 @@ export interface Card {
 
 export interface State {
   gameStarted: boolean;
+  allowInput: boolean;
   cards: Card[];
 }
 
@@ -22,6 +23,7 @@ const gameReducer = createReducer({
     return {
       ...state,
       gameStarted: true,
+      allowInput: true,
       cards: standardDeck.map((card) => ({
         id: Math.floor(Math.random() * 1000000),
         label: card.label,
@@ -31,10 +33,6 @@ const gameReducer = createReducer({
         selected: false,
       })),
     };
-  },
-
-  ADD_CARD: (state: State, payload: Card): State => {
-    return { ...state, cards: [...state.cards, payload] };
   },
 
   ADD_CARDS: (state: State, payload: Card[]): State => {
@@ -59,29 +57,6 @@ const gameReducer = createReducer({
     };
   },
 
-  PLAY_SELECTION: (state: State, payload: Card[]): State => {
-    // puts all selected cards on the board and deselects them
-    return {
-      ...state,
-      cards: state.cards.map((card) =>
-        payload.includes(card)
-          ? { ...card, position: "board", selected: false }
-          : card
-      ),
-    };
-  },
-
-  PLAY_CARD: (state: State, payload: Card): State => {
-    return {
-      ...state,
-      cards: state.cards.map((card) =>
-        card.id === payload.id
-          ? { ...card, position: "board", selected: false }
-          : card
-      ),
-    };
-  },
-
   PLAY_CARDS: (state: State, payload: Card[]): State => {
     return {
       ...state,
@@ -90,17 +65,7 @@ const gameReducer = createReducer({
           ? { ...card, position: "board", selected: false }
           : card
       ),
-    };
-  },
-
-  DISCARD_CARD: (state: State, payload: Card): State => {
-    return {
-      ...state,
-      cards: state.cards.map((card) =>
-        card.id === payload.id
-          ? { ...card, selected: false, position: "discard" }
-          : card
-      ),
+      allowInput: false,
     };
   },
 
@@ -115,21 +80,6 @@ const gameReducer = createReducer({
     };
   },
 
-  DRAW_CARD: (state: State): State => {
-    // moves a card from the deck to the hand
-    let found = false;
-    return {
-      ...state,
-      cards: state.cards.map((card) => {
-        if (card.position === "deck" && found === false) {
-          found = true;
-          return { ...card, position: "hand" };
-        }
-        return card;
-      }),
-    };
-  },
-
   DRAW_CARDS: (state: State, payload: number): State => {
     let cardsDrawn = 0;
     return {
@@ -141,6 +91,7 @@ const gameReducer = createReducer({
         }
         return card;
       }),
+      allowInput: true,
     };
   },
 
