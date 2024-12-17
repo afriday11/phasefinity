@@ -82,11 +82,35 @@ const gameReducer = createReducer({
     };
   },
 
+  PLAY_CARDS: (state: State, payload: Card[]): State => {
+    return {
+      ...state,
+      cards: state.cards.map((card) =>
+        payload.includes(card)
+          ? { ...card, position: "board", selected: false }
+          : card
+      ),
+    };
+  },
+
   DISCARD_CARD: (state: State, payload: Card): State => {
     return {
       ...state,
       cards: state.cards.map((card) =>
-        card.id === payload.id ? { ...card, position: "discard" } : card
+        card.id === payload.id
+          ? { ...card, selected: false, position: "discard" }
+          : card
+      ),
+    };
+  },
+
+  DISCARD_CARDS: (state: State, payload: Card[]): State => {
+    return {
+      ...state,
+      cards: state.cards.map((card) =>
+        payload.some((p) => p.id === card.id)
+          ? { ...card, position: "discard" }
+          : card
       ),
     };
   },
@@ -99,6 +123,20 @@ const gameReducer = createReducer({
       cards: state.cards.map((card) => {
         if (card.position === "deck" && found === false) {
           found = true;
+          return { ...card, position: "hand" };
+        }
+        return card;
+      }),
+    };
+  },
+
+  DRAW_CARDS: (state: State, payload: number): State => {
+    let cardsDrawn = 0;
+    return {
+      ...state,
+      cards: state.cards.map((card) => {
+        if (card.position === "deck" && cardsDrawn < payload) {
+          cardsDrawn++;
           return { ...card, position: "hand" };
         }
         return card;
