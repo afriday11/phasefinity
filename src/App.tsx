@@ -5,6 +5,7 @@ import GameBoard from "./components/GameBoard";
 import ScoreDisplay from "./components/ScoreDisplay";
 import gameReducer, { State } from "./reducers/gameReducer";
 import scoreReducer, { initialScoreState } from "./reducers/scoreReducer";
+import { evaluateHand } from "./services/scoreService";
 
 const initialState: State = {
   gameStarted: false,
@@ -23,9 +24,30 @@ function App() {
   const discardPile = gameState.cards.filter((card) => card.position === "discard");
   const selectedCards = gameState.cards.filter((card) => card.selected);
 
+  const handEvaluation =
+    selectedCards.length > 0 && evaluateHand(selectedCards);
+
+  function renderHandEvaluation() {
+    return (
+      <div
+        style={{
+          position: "absolute",
+          bottom: 300,
+          margin: "0 auto",
+          width: "100%",
+          textAlign: "center",
+        }}
+      >
+        <p>{handEvaluation.handType}</p>
+        <p>+{handEvaluation.score}</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       {gameState.gameStarted && <ScoreDisplay score={scoreState} />}
+      {handEvaluation && renderHandEvaluation()}
       <GameBoard
         handCards={handCards}
         boardCards={boardCards}
