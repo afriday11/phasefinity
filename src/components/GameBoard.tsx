@@ -1,5 +1,5 @@
 import { Card as CardType } from "../reducers/gameReducer";
-import { Dispatch } from "react";
+import { Dispatch, useEffect, useState } from "react";
 import useWindowSize from "../hooks/useWindowSize";
 import Card from "./Card";
 import useMousePosition from "../hooks/useMousePosition";
@@ -79,47 +79,101 @@ function Hand({
   const cardSpacing = Math.min((screenWidth * 0.666) / cardLength, 100);
   const xOffset = cardSpacing * (cardLength / 2);
 
-  const mousePosition = useMousePosition();
-  const mouseXcardIndex = Math.max(
-    0,
-    Math.floor(
-      (mousePosition.x + cardSpacing * (cardLength / 2) - screenHalf) /
-        cardSpacing
-    )
-  );
+  const [dragging, setDragging] = useState<{
+    card: CardType;
+    x: number;
+    y: number;
+    offsetX: number;
+    offsetY: number;
+    dragging: boolean;
+  } | null>(null);
+
+  const { x: mouseX, y: mouseY } = useMousePosition();
 
   const anchoredYOffset = anchor === "top" ? yOffset : screenHeight - yOffset;
 
-  // cards = cards.sort((a, b) => a.value - b.value);
+  const handleMouseDown = (
+    card: CardType,
+    e: React.MouseEvent<HTMLDivElement>
+  ) => {
+    // e.preventDefault();
 
-  // create a new array and insert a blank card at the mouseXcardIndex
-  const newCards = [...cards];
-  newCards.splice(mouseXcardIndex, 0, { id: null, value: 0 });
+    // get bounding client rect
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    // get position of mouse relative to card
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    setDragging({ card, offsetX: x, offsetY: y, x, y, dragging: false });
+    onClick?.(card);
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+
+    function handleMouseMove(e: MouseEvent) {
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      setDragging((dragging: any) => ({
+        ...dragging,
+        dragging: true,
+        x: x - e.movementX,
+        y: y - e.movementY,
+      }));
+    }
+
+    function handleMouseUp() {
+      setDragging(null);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    }
+  };
+
+  // cards = cards.sort((a, b) => a.value - b.value);
 
   return cards.map((card, index) => {
     const cardPosition = splayed
       ? index * cardSpacing + cardSpacing / 2 - xOffset
       : 0;
 
-    const cardRotation = splayed ? cardPosition / (screenWidth / 50) : 0;
     const archOffset = cardPosition * (cardPosition / (screenWidth * 2));
 
-    const x = cardPosition + screenHalf - cardWidth / 2;
-    const y = anchoredYOffset - (card.selected ? 40 : 0) + archOffset;
+    let x = cardPosition + screenHalf - cardWidth / 2;
+    let y = anchoredYOffset + archOffset;
+
+    const isDragging = dragging?.card?.id === card.id && dragging?.dragging;
+    if (isDragging) {
+      x += dragging.x - dragging.offsetX;
+      y += dragging.y - dragging.offsetY;
+    }
+
+    const cardRotation = splayed
+      ? (x + 50 - screenHalf) / (screenWidth / 50)
+      : 0;
 
     if (card.id === null) {
       return <div style={{ position: "absolute", left: x, top: y }} />;
     }
 
     return (
-      <Card
+      <div
         key={card.id}
-        card={card}
-        zIndex={index}
-        position={{ x, y }}
-        rotation={cardRotation + 0}
-        onClick={onClick}
-      />
+        className="card-container"
+        style={{
+          transform: `translate(${x}px, ${y}px) rotate(${cardRotation}deg)`,
+          zIndex: isDragging ? 1000 : index,
+          opacity:
+            card.position === "discard" || card.position === "deck" ? 0 : 1,
+        }}
+        onMouseDown={(e) => handleMouseDown(card, e)}
+        onMouseUp={() => {
+          if (isDragging) {
+            onClick?.(card);
+          }
+        }}
+      >
+        <Card selected={card.selected} card={card} />
+      </div>
     );
   });
 }

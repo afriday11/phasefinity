@@ -49,6 +49,7 @@ const gameReducer = createReducer({
   },
 
   TOGGLE_CARD_SELECTION: (state: State, payload: { id: number }): State => {
+    console.log("TOGGLE_CARD_SELECTION", payload);
     return {
       ...state,
       cards: state.cards.map((card) =>
@@ -74,9 +75,10 @@ const gameReducer = createReducer({
       ...state,
       cards: state.cards.map((card) =>
         payload.some((p) => p.id === card.id)
-          ? { ...card, position: "discard" }
+          ? { ...card, selected: false, position: "discard" }
           : card
       ),
+      allowInput: false,
     };
   },
 

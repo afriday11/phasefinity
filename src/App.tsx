@@ -65,6 +65,7 @@ function App() {
       <GameBoard cardState={cardState} dispatch={gameDispatch} />
       <GameControls
         disabled={canInteract}
+        isDealing={isDealing}
         gameStarted={gameState.gameStarted}
         cardState={cardState}
         dispatch={gameDispatch}

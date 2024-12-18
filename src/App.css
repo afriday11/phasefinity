@@ -23,12 +23,26 @@
   );
 }
 
-.card {
+.card-container {
   --animation-duration: 0.35s;
-  /* --cubic-bezier: cubic-bezier(0.21, 1.35, 0.59, 1); */
   --cubic-bezier: cubic-bezier(0.33, 1.41, 0.59, 1);
 
   position: absolute;
+
+  transition: transform var(--animation-duration) var(--cubic-bezier),
+    opacity var(--animation-duration) var(--cubic-bezier);
+  display: flex;
+  justify-content: flex-start;
+
+  font-size: 16px;
+  transform-origin: center 25%;
+  cursor: pointer;
+}
+
+.card {
+  position: relative;
+  top: 0;
+  left: 0;
   width: 100px;
   aspect-ratio: 2.5/3.5;
   background-color: white;
@@ -36,14 +50,8 @@
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.4), 0 4px 20px 0 rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   color: black;
-  transition: transform var(--animation-duration) var(--cubic-bezier),
-    opacity var(--animation-duration) var(--cubic-bezier);
-  display: flex;
-  justify-content: flex-start;
   padding: 4px;
-  font-size: 16px;
-  transform-origin: center 25%;
-  cursor: pointer;
+  transition: top 0.35s var(--cubic-bezier);
 }
 
 .card-value {

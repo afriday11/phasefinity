@@ -5,6 +5,7 @@ import { evaluateHand } from "../services/scoreService";
 
 type GameControlsProps = {
   disabled: boolean;
+  isDealing: boolean;
   gameStarted: boolean;
   cardState: CardState;
   dispatch: Dispatch<{ type: string; payload: unknown }>;
@@ -21,12 +22,16 @@ type CardState = {
 
 function GameControls({
   disabled,
+  isDealing,
   gameStarted,
   cardState,
   dispatch,
   scoreDispatch,
 }: GameControlsProps) {
   const { selectedCards, handCards, deckCards } = cardState;
+
+  const shouldReset = !handCards.length && !deckCards.length;
+  const isDisabled = selectedCards.length === 0; // || isDealing;
 
   async function handlePlayCards() {
     const evaluation = evaluateHand(selectedCards);
@@ -54,6 +59,10 @@ function GameControls({
   }
 
   function handleDiscardCards() {
+    // since we're not operating on the actual card state, we need to check if we're
+    // dealing cards so we dont allow discarding the same cards multiple times
+    if (isDealing) return;
+
     dispatch({
       type: "DISCARD_CARDS",
       payload: selectedCards,
@@ -71,19 +80,22 @@ function GameControls({
   }
 
   function renderButtons() {
+    if (shouldReset || !gameStarted)
+      return (
+        <button onClick={handleResetGame}>
+          {gameStarted ? "Reset" : "New Game"}
+        </button>
+      );
     return (
       <>
         <button //prettier-ignore
           onClick={handlePlayCards}
-          disabled={selectedCards.length === 0}
+          disabled={isDisabled}
         >
           Play Hand
         </button>
 
-        <button
-          onClick={handleDiscardCards}
-          disabled={selectedCards.length === 0}
-        >
+        <button onClick={handleDiscardCards} disabled={isDisabled}>
           Discard
         </button>
 

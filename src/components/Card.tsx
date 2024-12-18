@@ -1,32 +1,11 @@
 import { Card as CardType } from "../reducers/gameReducer";
-import { useEffect, useState } from "react";
 
 type cardProps = {
   card: CardType;
-  zIndex: number;
-  position: { x: number; y: number };
-  rotation: number;
-  onClick?: (card: CardType) => void;
+  selected: boolean;
 };
 
-function Card({
-  card,
-  zIndex,
-  position,
-  rotation,
-  onClick,
-  ...props
-}: cardProps) {
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  useEffect(() => {
-    setIsAnimating(true);
-    const timer = setTimeout(() => {
-      setIsAnimating(false);
-    }, 30);
-    return () => clearTimeout(timer);
-  }, [card.position]);
-
+function Card({ card, selected }: cardProps) {
   const emoji = {
     hearts: "♥",
     diamonds: "♦",
@@ -42,23 +21,7 @@ function Card({
   }[card.suit];
 
   return (
-    <div
-      key={card.id}
-      className="card"
-      style={{
-        transform: `translate(${position.x}px, ${
-          position.y
-        }px) rotate(${rotation}deg) ${
-          isAnimating ? "scaleY(2.5) scaleX(0.5)" : "scaleY(1) scaleX(1)"
-        }`,
-        zIndex: zIndex,
-        opacity:
-          card.position === "discard" || card.position === "deck" ? 0 : 1,
-        color: color,
-      }}
-      onMouseDown={() => onClick && onClick(card)}
-      {...props}
-    >
+    <div className="card" style={{ color: color, top: selected ? -40 : 0 }}>
       <span
         className="card-value"
         style={{
