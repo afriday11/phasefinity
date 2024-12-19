@@ -42,6 +42,8 @@ function App() {
     cardState.selectedCards.length > 0 && evaluateHand(cardState.selectedCards);
 
   function renderHandEvaluation() {
+    if (!handEvaluation) return null;
+
     return (
       <div
         style={{
