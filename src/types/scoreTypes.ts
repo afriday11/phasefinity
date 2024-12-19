@@ -24,3 +24,23 @@ export interface ScoreAction {
     handType?: HandType;
   };
 }
+
+export interface ScoreMultipliers {
+  chips: number;
+  multiplier: number;
+}
+
+export interface ScoreCalculation {
+  baseChips: number;
+  baseMultiplier: number;
+  currentChips: number;
+  currentMultiplier: number;
+  handType: HandType;
+  finalScore: number;
+}
+
+export interface BonusResult {
+  chipBonus?: number;
+  multiplierBonus?: number;
+  description: string;
+}

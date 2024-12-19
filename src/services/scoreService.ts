@@ -1,10 +1,12 @@
 import { Card } from "../reducers/gameReducer";
 import { HandType } from "../types/scoreTypes";
+import { ScoreCalculator } from './scoreCalculator';
 
 interface HandEvaluation {
   handType: HandType;
   score: number;
   highCard?: number;
+  calculation?: any;
 }
 
 function hasStraight(values: number[]): boolean {
@@ -91,6 +93,16 @@ export function evaluateHand(cards: Card[]): HandEvaluation {
     handType: "highCard",
     score: calculateScore("highCard"),
     highCard: highestCard,
+  };
+
+  // After determining hand type, calculate score with bonuses
+  const calculator = new ScoreCalculator(handType, cards);
+  const scoreCalculation = calculator.calculateScore(cards);
+
+  return {
+    handType: handType,
+    score: scoreCalculation.finalScore,
+    calculation: scoreCalculation // Optional: include full calculation details
   };
 }
 

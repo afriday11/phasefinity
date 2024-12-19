@@ -1,0 +1,13 @@
+{
+  "baseScores": {
+    "highCard": { "chips": 5, "multiplier": 1 },
+    "pair": { "chips": 10, "multiplier": 2 },
+    "twoPair": { "chips": 20, "multiplier": 2 },
+    "threeOfAKind": { "chips": 30, "multiplier": 3 },
+    "straight": { "chips": 30, "multiplier": 4 },
+    "flush": { "chips": 35, "multiplier": 4 },
+    "fullHouse": { "chips": 40, "multiplier": 4 },
+    "fourOfAKind": { "chips": 60, "multiplier": 7 },
+    "straightFlush": { "chips": 100, "multiplier": 8 }
+  }
+} 
