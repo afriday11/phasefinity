@@ -15,6 +15,9 @@ export interface ScoreState {
   lastPlayScore: number;
   lastPlayType: HandType | null;
   roundNumber: number;
+  currentChips?: number;
+  currentMultiplier?: number;
+  bonusDescription?: string;
 }
 
 export interface ScoreAction {
@@ -37,6 +40,7 @@ export interface ScoreCalculation {
   currentMultiplier: number;
   handType: HandType;
   finalScore: number;
+  bonuses: string;
 }
 
 export interface BonusResult {

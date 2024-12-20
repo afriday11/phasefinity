@@ -92,7 +92,7 @@ export function evaluateHand(cards: Card[]): HandEvaluation {
   return {
     handType: handType,
     score: scoreCalculation.finalScore,
-    calculation: scoreCalculation, // Optional: include full calculation details
+    calculation: scoreCalculation, // Include full calculation details
     highCard: handType === "highCard" ? highestCard : undefined,
   };
 }

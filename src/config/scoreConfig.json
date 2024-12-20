@@ -1,0 +1,50 @@
+{
+  "handScores": {
+    "highCard": {
+      "baseChips": 5,
+      "baseMultiplier": 1
+    },
+    "pair": {
+      "baseChips": 10,
+      "baseMultiplier": 2
+    },
+    "twoPair": {
+      "baseChips": 20,
+      "baseMultiplier": 2
+    },
+    "threeOfAKind": {
+      "baseChips": 30,
+      "baseMultiplier": 3
+    },
+    "straight": {
+      "baseChips": 30,
+      "baseMultiplier": 4
+    },
+    "flush": {
+      "baseChips": 35,
+      "baseMultiplier": 4
+    },
+    "fullHouse": {
+      "baseChips": 40,
+      "baseMultiplier": 4
+    },
+    "fourOfAKind": {
+      "baseChips": 60,
+      "baseMultiplier": 7
+    },
+    "straightFlush": {
+      "baseChips": 100,
+      "baseMultiplier": 8
+    }
+  },
+  "bonuses": {
+    "highCardBonus": {
+      "ace": 2,
+      "faceCard": 1.5
+    },
+    "suitBonus": {
+      "allHearts": 5,
+      "allSpades": 5
+    }
+  }
+} 

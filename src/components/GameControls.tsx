@@ -40,6 +40,9 @@ function GameControls({
       payload: {
         points: evaluation.score,
         handType: evaluation.handType,
+        chips: evaluation.calculation.currentChips,
+        multiplier: evaluation.calculation.currentMultiplier,
+        bonusDescription: evaluation.calculation.bonuses
       },
     });
     dispatch({
