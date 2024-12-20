@@ -1,13 +1,4 @@
-export type HandType = 
-  | 'highCard' 
-  | 'pair' 
-  | 'twoPair' 
-  | 'threeOfAKind' 
-  | 'straight' 
-  | 'flush' 
-  | 'fullHouse' 
-  | 'fourOfAKind' 
-  | 'straightFlush';
+export type HandType = 'pair' | 'twoPair' | 'threeOfAKind' | 'straight' | 'flush' | 'fullHouse' | 'fourOfAKind' | 'straightFlush';
 
 export interface ScoreState {
   currentScore: number;
@@ -15,8 +6,8 @@ export interface ScoreState {
   lastPlayScore: number;
   lastPlayType: HandType | null;
   roundNumber: number;
-  currentChips?: number;
-  currentMultiplier?: number;
+  currentChips: number;
+  currentMultiplier: number;
   bonusDescription?: string;
 }
 

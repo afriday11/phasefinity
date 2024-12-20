@@ -19,18 +19,30 @@ export class ScoreCalculator {
     // Start with base values
     let currentChips = this.baseChips;
     let currentMultiplier = this.baseMultiplier;
+    const bonusDescriptions: string[] = [];
 
-    // Apply bonuses
-    const bonuses = this.calculateBonuses();
-    
-    // Apply chip bonuses
-    if (bonuses.chipBonus) {
-      currentChips += bonuses.chipBonus;
+    // Step 1: Apply base hand score
+    bonusDescriptions.push(`Base hand: ${this.handType} (${currentChips} chips)`);
+
+    // Step 2: Calculate card value bonuses (left to right)
+    const cardBonuses = this.calculateCardValueBonuses();
+    if (cardBonuses.chipBonus) {
+      currentChips += cardBonuses.chipBonus;
+    }
+    if (cardBonuses.description) {
+      bonusDescriptions.push(cardBonuses.description);
     }
 
-    // Apply multiplier bonuses
-    if (bonuses.multiplierBonus) {
-      currentMultiplier *= bonuses.multiplierBonus;
+    // Step 3: Apply other bonuses (Aces, Face cards, Suits)
+    const otherBonuses = this.calculateBonuses();
+    if (otherBonuses.chipBonus) {
+      currentChips += otherBonuses.chipBonus;
+    }
+    if (otherBonuses.multiplierBonus) {
+      currentMultiplier *= otherBonuses.multiplierBonus;
+    }
+    if (otherBonuses.description) {
+      bonusDescriptions.push(otherBonuses.description);
     }
 
     // Calculate final score
@@ -43,7 +55,36 @@ export class ScoreCalculator {
       currentMultiplier,
       handType: this.handType,
       finalScore,
-      bonuses: bonuses.description
+      bonuses: bonusDescriptions.join(' • ')
+    };
+  }
+
+  private calculateCardValueBonuses(): BonusResult {
+    let chipBonus = 0;
+    const bonusDescriptions: string[] = [];
+
+    // Process cards left to right
+    this.cards.forEach((card) => {
+      let cardBonus = 0;
+      
+      // Convert face cards to their bonus values
+      if (card.value === 14) {  // Ace
+        cardBonus = 11;
+      } else if (card.value >= 11) {  // Face cards
+        cardBonus = 10;
+      } else {  // Number cards
+        cardBonus = card.value;
+      }
+
+      chipBonus += cardBonus;
+      bonusDescriptions.push(`${card.label}: +${cardBonus}`);
+    });
+
+    return {
+      chipBonus,
+      description: bonusDescriptions.length > 0 
+        ? `Card bonuses: ${bonusDescriptions.join(', ')}` 
+        : ''
     };
   }
 
