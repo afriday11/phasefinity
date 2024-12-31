@@ -1,5 +1,6 @@
 import { Card } from "../reducers/gameReducer";
 import { HandType, ScoreCalculation, BonusResult } from "../types/scoreTypes";
+import { HandLevelService } from "../services/handLevelService";
 import scoreConfig from "../config/scoreConfig.json";
 
 export class ScoreCalculator {
@@ -7,12 +8,23 @@ export class ScoreCalculator {
   private cards: Card[];
   private baseChips: number;
   private baseMultiplier: number;
+  private handLevelService: HandLevelService;
 
-  constructor(handType: HandType, cards: Card[]) {
+  constructor(handType: HandType, cards: Card[], handLevelService: HandLevelService) {
     this.handType = handType;
     this.cards = cards;
-    this.baseChips = scoreConfig.handScores[handType].baseChips;
-    this.baseMultiplier = scoreConfig.handScores[handType].baseMultiplier;
+    this.handLevelService = handLevelService;
+    
+    // Correctly access baseChips from handScores
+    this.baseChips = scoreConfig.handScores[handType].baseChips || 0;
+    this.baseMultiplier = scoreConfig.handScores[handType].baseMultiplier || 1;
+
+    // Update base values using level service
+    const totalMultiplier = this.handLevelService.getTotalMultiplier(handType);
+    this.baseMultiplier *= totalMultiplier;
+    
+    // Track that this hand was played
+    this.handLevelService.incrementTimesPlayed(handType);
   }
 
   public calculateScore(): ScoreCalculation {
@@ -87,6 +99,7 @@ export class ScoreCalculator {
         : ''
     };
   }
+
 
   private calculateBonuses(): BonusResult {
     const result: BonusResult = {

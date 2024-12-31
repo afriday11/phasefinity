@@ -1,4 +1,4 @@
-export type HandType = 'pair' | 'twoPair' | 'threeOfAKind' | 'straight' | 'flush' | 'fullHouse' | 'fourOfAKind' | 'straightFlush';
+export type HandType = 'highCard' | 'pair' | 'twoPair' | 'threeOfAKind' | 'straight' | 'flush' | 'fullHouse' | 'fourOfAKind' | 'straightFlush';
 
 export interface ScoreState {
   currentScore: number;
@@ -38,4 +38,25 @@ export interface BonusResult {
   chipBonus?: number;
   multiplierBonus?: number;
   description: string;
+}
+
+export interface HandLevel {
+  level: number;
+  baseMultiplier: number;
+  runMultiplier: number;
+  timesPlayed: number;
+}
+
+export interface HandLevelConfig {
+  levelMultiplier: number;  // l_mult in the example
+  levelChips: number;      // l_chips in the example
+  baseMultiplier: number;  // mult in the example
+  baseChips: number;       // chips in the example
+}
+
+export interface HandConfig {
+  handType: HandType;
+  visible: boolean;
+  order: number;
+  config: HandLevelConfig;
 }

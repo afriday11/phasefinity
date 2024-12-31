@@ -1,4 +1,4 @@
-import { Bonus, BonusContext } from './types';
+import { Bonus } from './types';
 import { BonusResult } from '../../types/scoreTypes';
 
 export const cardFaceChipBonus: Bonus = {
@@ -7,7 +7,8 @@ export const cardFaceChipBonus: Bonus = {
   description: 'Bonus chips based on card faces',
   priority: 1, // First bonus to be applied
   
-  calculate: (context: BonusContext): BonusResult => {
+
+  calculate: (): BonusResult => {
     // Placeholder for now
     return {
       chipBonus: 0,

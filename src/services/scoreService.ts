@@ -1,12 +1,14 @@
 import { Card } from "../reducers/gameReducer";
-import { HandType } from "../types/scoreTypes";
+import { HandType, ScoreCalculation } from "../types/scoreTypes";
 import { ScoreCalculator } from './scoreCalculator';
+import { HandLevelService } from './handLevelService';
 
 interface HandEvaluation {
   handType: HandType;
   score: number;
   highCard?: number;
-  calculation?: any;
+  calculation?: ScoreCalculation; // ScoreCalculation is a type from scoreCalculator.ts
+  level: number;
 }
 
 function hasStraight(values: number[]): boolean {
@@ -31,19 +33,26 @@ export function isValidHandSize(cards: Card[]): boolean {
   return validHandSizes.includes(cards.length);
 }
 
-export function evaluateHand(cards: Card[]): HandEvaluation {
-  if (cards.length === 0) {
-    return { handType: "highCard", score: 0 };
+export class ScoreService {
+  private handLevelService: HandLevelService;
+
+  constructor() {
+    this.handLevelService = new HandLevelService();
   }
+
+  public evaluateHand(cards: Card[]): HandEvaluation {
+    if (cards.length === 0) {
+      return { handType: "highCard", score: 0, level: 1 };
+    }
 
   // Get the highest card value for scoring
   const highestCard = Math.max(...cards.map((card) => card.value));
 
-  // Count occurrences of each value
-  const valueCounts = cards.reduce((acc, card) => {
-    acc[card.value] = (acc[card.value] || 0) + 1;
-    return acc;
-  }, {} as Record<number, number>);
+    // Count occurrences of each value
+    const valueCounts = cards.reduce((acc, card) => {
+      acc[card.value] = (acc[card.value] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
 
   const values = Object.values(valueCounts);
   const uniqueValues = Object.keys(valueCounts).map(Number);
@@ -53,48 +62,48 @@ export function evaluateHand(cards: Card[]): HandEvaluation {
   const isFlush = hasFlush(cards);
 
   let handType: HandType;
-  let score: number;
 
   // Evaluate hand type from best to worst
   if (isStraight && isFlush) {
     handType = "straightFlush";
-    score = calculateScore("straightFlush");
   } else if (values.includes(4)) {
     handType = "fourOfAKind";
-    score = calculateScore("fourOfAKind");
   } else if (values.includes(3) && values.includes(2)) {
     handType = "fullHouse";
-    score = calculateScore("fullHouse");
   } else if (isFlush) {
     handType = "flush";
-    score = calculateScore("flush");
   } else if (isStraight) {
     handType = "straight";
-    score = calculateScore("straight");
   } else if (values.includes(3)) {
     handType = "threeOfAKind";
-    score = calculateScore("threeOfAKind");
   } else if (values.filter((count) => count === 2).length === 2) {
     handType = "twoPair";
-    score = calculateScore("twoPair");
   } else if (values.includes(2)) {
     handType = "pair";
-    score = calculateScore("pair");
   } else {
     handType = "highCard";
-    score = calculateScore("highCard");
   }
 
-  // After determining hand type, calculate score with bonuses
-  const calculator = new ScoreCalculator(handType, cards);
-  const scoreCalculation = calculator.calculateScore(cards);
+    // After determining hand type, calculate score with bonuses
+    const calculator = new ScoreCalculator(handType, cards, this.handLevelService);
+    const scoreCalculation = calculator.calculateScore();
 
-  return {
-    handType: handType,
-    score: scoreCalculation.finalScore,
-    calculation: scoreCalculation, // Include full calculation details
-    highCard: handType === "highCard" ? highestCard : undefined,
-  };
+    return {
+      handType: handType,
+      score: scoreCalculation.finalScore,
+      calculation: scoreCalculation,
+      highCard: handType === "highCard" ? highestCard : undefined,
+      level: this.handLevelService.getHandLevel(handType).level
+    };
+  }
+
+  public upgradeHandBaseLevel(handType: HandType): void {
+    this.handLevelService.upgradeHandBaseLevel(handType);
+  }
+
+  public upgradeHandRunMultiplier(handType: HandType): void {
+    this.handLevelService.upgradeHandRunMultiplier(handType);
+  }
 }
 
 export function calculateScore(handType: HandType): number {
