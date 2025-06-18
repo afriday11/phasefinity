@@ -16,6 +16,9 @@ export interface ScoreAction {
   payload?: {
     points?: number;
     handType?: HandType;
+    chips?: number;
+    multiplier?: number;
+    bonusDescription?: string;
   };
 }
 

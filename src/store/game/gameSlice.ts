@@ -1,5 +1,6 @@
-import createReducer from "../utils/createReducer";
-import standardDeck from "../standardDeck";
+import createReducer from "../../utils/createReducer";
+import standardDeck from "../../standardDeck";
+import { GameAction } from "../../types/actions";
 
 export type boardPositions = "hand" | "board" | "discard" | "deck";
 
@@ -18,9 +19,10 @@ export interface State {
   cards: Card[];
 }
 
-const gameReducer = createReducer({
+const gameReducer = createReducer<State, GameAction>({
   INITIALIZE_GAME: (state: State): State => {
-    return {
+    console.log("🎯 INITIALIZE_GAME action processing...");
+    const newState = {
       ...state,
       gameStarted: true,
       allowInput: true,
@@ -29,40 +31,45 @@ const gameReducer = createReducer({
         label: card.label,
         value: card.value,
         suit: card.suit,
-        position: "deck",
+        position: "deck" as boardPositions,
         selected: false,
       })),
     };
+    console.log("🎯 INITIALIZE_GAME complete:", { 
+      gameStarted: newState.gameStarted, 
+      cardCount: newState.cards.length 
+    });
+    return newState;
   },
 
-  ADD_CARDS: (state: State, payload: Card[]): State => {
-    return { ...state, cards: [...state.cards, ...payload] };
+  ADD_CARDS: (state: State, action): State => {
+    return { ...state, cards: [...state.cards, ...action.payload] };
   },
 
-  SELECT_CARD: (state: State, payload: { id: number }): State => {
+  SELECT_CARD: (state: State, action): State => {
     return {
       ...state,
       cards: state.cards.map((card) =>
-        card.id === payload.id ? { ...card, selected: true } : card
+        card.id === action.payload.id ? { ...card, selected: true } : card
       ),
     };
   },
 
-  TOGGLE_CARD_SELECTION: (state: State, payload: { id: number }): State => {
-    console.log("TOGGLE_CARD_SELECTION", payload);
+  TOGGLE_CARD_SELECTION: (state: State, action): State => {
+    console.log("TOGGLE_CARD_SELECTION", action.payload);
     return {
       ...state,
       cards: state.cards.map((card) =>
-        card.id === payload.id ? { ...card, selected: !card.selected } : card
+        card.id === action.payload.id ? { ...card, selected: !card.selected } : card
       ),
     };
   },
 
-  PLAY_CARDS: (state: State, payload: Card[]): State => {
+  PLAY_CARDS: (state: State, action): State => {
     return {
       ...state,
       cards: state.cards.map((card) =>
-        payload.includes(card)
+        action.payload.includes(card)
           ? { ...card, position: "board", selected: false }
           : card
       ),
@@ -70,11 +77,11 @@ const gameReducer = createReducer({
     };
   },
 
-  DISCARD_CARDS: (state: State, payload: Card[]): State => {
+  DISCARD_CARDS: (state: State, action): State => {
     return {
       ...state,
       cards: state.cards.map((card) =>
-        payload.some((p) => p.id === card.id)
+        action.payload.some((p) => p.id === card.id)
           ? { ...card, selected: false, position: "discard" }
           : card
       ),
@@ -82,19 +89,22 @@ const gameReducer = createReducer({
     };
   },
 
-  DRAW_CARDS: (state: State, payload: number): State => {
+  DRAW_CARDS: (state: State, action): State => {
+    console.log(`🎯 DRAW_CARDS action: drawing ${action.payload} cards`);
     let cardsDrawn = 0;
-    return {
+    const newState = {
       ...state,
       cards: state.cards.map((card) => {
-        if (card.position === "deck" && cardsDrawn < payload) {
+        if (card.position === "deck" && cardsDrawn < action.payload) {
           cardsDrawn++;
-          return { ...card, position: "hand" };
+          return { ...card, position: "hand" as boardPositions };
         }
         return card;
       }),
       allowInput: true,
     };
+    console.log(`🎯 DRAW_CARDS complete: drew ${cardsDrawn} cards to hand`);
+    return newState;
   },
 
   SHUFFLE_DECK: (state: State): State => {

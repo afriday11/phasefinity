@@ -1,0 +1,98 @@
+{
+  "hands": {
+    "highCard": {
+      "baseChips": 5,
+      "baseMultiplier": 1,
+      "levelMultiplier": 0,
+      "levelChips": 0
+    },
+    "pair": {
+      "baseChips": 10,
+      "baseMultiplier": 2,
+      "levelMultiplier": 1,
+      "levelChips": 5
+    },
+    "twoPair": {
+      "baseChips": 20,
+      "baseMultiplier": 2,
+      "levelMultiplier": 1,
+      "levelChips": 10
+    },
+    "threeOfAKind": {
+      "baseChips": 30,
+      "baseMultiplier": 3,
+      "levelMultiplier": 2,
+      "levelChips": 15
+    },
+    "straight": {
+      "baseChips": 30,
+      "baseMultiplier": 4,
+      "levelMultiplier": 2,
+      "levelChips": 20
+    },
+    "flush": {
+      "baseChips": 35,
+      "baseMultiplier": 4,
+      "levelMultiplier": 3,
+      "levelChips": 25
+    },
+    "fullHouse": {
+      "baseChips": 40,
+      "baseMultiplier": 4,
+      "levelMultiplier": 2,
+      "levelChips": 25
+    },
+    "fourOfAKind": {
+      "baseChips": 60,
+      "baseMultiplier": 7,
+      "levelMultiplier": 3,
+      "levelChips": 30
+    },
+    "straightFlush": {
+      "baseChips": 100,
+      "baseMultiplier": 8,
+      "levelMultiplier": 4,
+      "levelChips": 40
+    }
+  },
+  "bonuses": {
+    "highCardBonus": {
+      "ace": 2,
+      "faceCard": 1.5
+    },
+    "suitBonus": {
+      "allHearts": 5,
+      "allSpades": 5
+    }
+  },
+  "playerLevels": {
+    "defaultTurnsPerLevel": 4,
+    "defaultDiscardsPerLevel": 3,
+    "levels": [
+      { "level": 1, "requiredScore": 300, "turns": 4, "discards": 3 },
+      { "level": 2, "requiredScore": 450, "turns": 4, "discards": 3 },
+      { "level": 3, "requiredScore": 675, "turns": 4, "discards": 3 },
+      { "level": 4, "requiredScore": 1012, "turns": 4, "discards": 3 },
+      { "level": 5, "requiredScore": 1518, "turns": 4, "discards": 3 },
+      { "level": 6, "requiredScore": 2277, "turns": 4, "discards": 3 },
+      { "level": 7, "requiredScore": 3415, "turns": 4, "discards": 3 },
+      { "level": 8, "requiredScore": 5122, "turns": 4, "discards": 3 },
+      { "level": 9, "requiredScore": 7683, "turns": 4, "discards": 3 },
+      { "level": 10, "requiredScore": 11524, "turns": 4, "discards": 3 },
+      { "level": 11, "requiredScore": 17286, "turns": 4, "discards": 3 },
+      { "level": 12, "requiredScore": 25929, "turns": 4, "discards": 3 },
+      { "level": 13, "requiredScore": 38893, "turns": 4, "discards": 3 },
+      { "level": 14, "requiredScore": 58339, "turns": 4, "discards": 3 },
+      { "level": 15, "requiredScore": 87508, "turns": 4, "discards": 3 },
+      { "level": 16, "requiredScore": 131262, "turns": 4, "discards": 3 },
+      { "level": 17, "requiredScore": 196893, "turns": 4, "discards": 3 },
+      { "level": 18, "requiredScore": 295339, "turns": 4, "discards": 3 },
+      { "level": 19, "requiredScore": 442908, "turns": 4, "discards": 3 },
+      { "level": 20, "requiredScore": 664362, "turns": 4, "discards": 3 },
+      { "level": 21, "requiredScore": 996543, "turns": 4, "discards": 3 },
+      { "level": 22, "requiredScore": 1494814, "turns": 4, "discards": 3 },
+      { "level": 23, "requiredScore": 2242221, "turns": 4, "discards": 3 },
+      { "level": 24, "requiredScore": 3363331, "turns": 4, "discards": 3 }
+    ]
+  }
+} 

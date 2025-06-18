@@ -1,10 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App' // Removed .tsx extension
 import './index.css'
-import App from './App.tsx'
+import { AppProvider } from './store/store' // Removed .tsx extension
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  // <React.StrictMode> // Temporarily disabled for cleaner debugging
+    <AppProvider>
+      <App />
+    </AppProvider>
+  // </React.StrictMode>,
 )

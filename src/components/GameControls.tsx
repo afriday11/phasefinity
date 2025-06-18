@@ -1,50 +1,80 @@
-import { Card } from "../reducers/gameReducer";
-import { Dispatch } from "react";
 import delay from "../utils/delay";
-import { evaluateHand } from "../services/scoreService";
+import { useAppContext } from '../store/store';
+import { evaluateHand } from '../services/handEvaluator';
+import { calculateScore } from '../services/scoreManager';
+import { checkLevelComplete, checkGameOver } from '../services/levelService';
+import React from 'react';
 
-type GameControlsProps = {
-  disabled: boolean;
-  isDealing: boolean;
-  gameStarted: boolean;
-  cardState: CardState;
-  dispatch: Dispatch<{ type: string; payload: unknown }>;
-  scoreDispatch: Dispatch<{ type: string; payload: unknown }>;
-};
+// GameControls is the component that manages the game controls, including: 
+// the play cards button, the discard cards button, and the reset game button.
+// It also uses the useAppContext hook to get the game state and dispatch actions.
+// It also uses the evaluateHand function to evaluate the hand.
+// It also uses the calculateScore function to calculate the score.
+// It also uses the delay function to delay the actions.
+// LEVEL MANAGEMENT: This component now handles turn/discard tracking and level progression
 
-type CardState = {
-  handCards: Card[];
-  boardCards: Card[];
-  discardPile: Card[];
-  deckCards: Card[];
-  selectedCards: Card[];
-};
+function GameControls() {
+  const { state, dispatch } = useAppContext();
+  const { game, handLevels, score, level } = state;
 
-function GameControls({
-  disabled,
-  isDealing,
-  gameStarted,
-  cardState,
-  dispatch,
-  scoreDispatch,
-}: GameControlsProps) {
-  const { selectedCards, handCards, deckCards } = cardState;
+  const handCards = game.cards.filter((card) => card.position === "hand");
+  const deckCards = game.cards.filter((card) => card.position === "deck");
+  const selectedCards = handCards.filter((card) => card.selected);
 
   const shouldReset = !handCards.length && !deckCards.length;
-  const isDisabled = selectedCards.length === 0; // || isDealing;
+  const isDisabled = selectedCards.length === 0;
+  const isGameOver = level.isGameOver;
+  const canDiscard = level.discardsRemaining > 0 && !isGameOver;
+  const canPlay = !isGameOver && level.turnsRemaining > 0;
+
+  // Debug logging to help troubleshoot
+  console.log("GameControls Debug:", {
+    gameStarted: game.gameStarted,
+    allowInput: game.allowInput,
+    handCards: handCards.length,
+    deckCards: deckCards.length,
+    shouldReset,
+    totalCards: game.cards.length,
+    currentLevel: level.currentLevel,
+    turnsRemaining: level.turnsRemaining,
+    discardsRemaining: level.discardsRemaining,
+    currentScore: score.currentScore,
+    requiredScore: level.requiredScore,
+    isGameOver,
+    canDiscard,
+    canPlay,
+    note: "Note: Logs may appear twice due to React Strict Mode in development"
+  });
 
   async function handlePlayCards() {
-    const evaluation = evaluateHand(selectedCards);
-    scoreDispatch({
+    const { handType } = evaluateHand(selectedCards);
+
+    // All hands are valid - multiple cards with no pairs/combinations 
+    // are treated as "highCard" and scored based on the highest card value
+
+    // First, dispatch that the hand has been played to track stats.
+    dispatch({ type: 'INCREMENT_TIMES_PLAYED', payload: { handType } });
+
+    // Then, calculate the score for the hand.
+    const calculation = calculateScore(handType, selectedCards, handLevels);
+
+    // Update the score in the application state.
+    dispatch({
       type: "UPDATE_SCORE",
       payload: {
-        points: evaluation.score,
-        handType: evaluation.handType,
-        chips: evaluation.calculation.currentChips,
-        multiplier: evaluation.calculation.currentMultiplier,
-        bonusDescription: evaluation.calculation.bonuses
+        points: calculation.finalScore,
+        handType: calculation.handType,
+        chips: calculation.currentChips,
+        multiplier: calculation.currentMultiplier,
+        bonusDescription: calculation.bonuses,
       },
     });
+
+    // FIXED: Use a turn when playing cards
+    dispatch({ type: 'USE_TURN' });
+    console.log("🎯 Used a turn - turns remaining:", level.turnsRemaining - 1);
+
+    // Proceed with the card animations and state changes.
     dispatch({
       type: "PLAY_CARDS",
       payload: selectedCards,
@@ -59,13 +89,42 @@ function GameControls({
       type: "DRAW_CARDS",
       payload: selectedCards.length,
     });
+
+    // FIXED: Check if level is complete after scoring
+    // Calculate the new score (current score + points just earned)
+    const newScore = score.currentScore + calculation.finalScore;
+    
+    if (checkLevelComplete(newScore, level.currentLevel)) {
+      console.log("🎉 Level complete! Moving to next level...");
+      dispatch({ type: 'NEXT_LEVEL' });
+      
+      // FIXED: Reset everything for the new level
+      console.log("🔄 Resetting for new level: score, board, and dealing new hand");
+      dispatch({ type: 'RESET_SCORE' }); // Reset score to 0 for new level
+      dispatch({ type: 'RESET' }); // Move all cards back to deck
+      dispatch({ type: 'SHUFFLE_DECK' }); // Shuffle for variety
+      dispatch({ type: 'DRAW_CARDS', payload: 8 }); // Deal fresh hand of 8 cards
+    } else {
+      // Check if game is over (no more turns and didn't reach required score)
+      const turnsAfterUse = level.turnsRemaining - 1;
+      if (checkGameOver(turnsAfterUse, newScore, level.requiredScore)) {
+        console.log("💀 Game Over! Not enough turns to reach required score.");
+        dispatch({ type: 'GAME_OVER' });
+      }
+    }
   }
 
   function handleDiscardCards() {
-    // since we're not operating on the actual card state, we need to check if we're
-    // dealing cards so we dont allow discarding the same cards multiple times
-    if (isDealing) return;
-
+    // FIXED: Check if discards are available before using one
+    if (level.discardsRemaining <= 0) {
+      console.log("❌ Cannot discard - no discards remaining!");
+      return;
+    }
+    
+    // FIXED: Use a discard when discarding cards
+    dispatch({ type: 'USE_DISCARD' });
+    console.log("🗑️ Used a discard - discards remaining:", level.discardsRemaining - 1);
+    
     dispatch({
       type: "DISCARD_CARDS",
       payload: selectedCards,
@@ -77,42 +136,47 @@ function GameControls({
   }
 
   function handleResetGame() {
-    dispatch({ type: "INITIALIZE_GAME", payload: null });
-    dispatch({ type: "SHUFFLE_DECK", payload: null });
+    console.log("🎮 New Game button clicked! Starting game...");
+    dispatch({ type: "INITIALIZE_GAME" });
+    dispatch({ type: "SHUFFLE_DECK" });
+    dispatch({ type: 'RESET_LEVEL' });
+    dispatch({ type: 'RESET_SCORE' });
+    dispatch({ type: 'RESET_HAND_LEVELS' });
     dispatch({ type: "DRAW_CARDS", payload: 8 });
+    console.log("🃏 Dealt 8 cards to hand");
   }
 
   function renderButtons() {
-    if (shouldReset || !gameStarted)
+    // Show "New Game" button if game is over
+    if (isGameOver) {
       return (
         <button onClick={handleResetGame}>
-          {gameStarted ? "Reset" : "New Game"}
+          Game Over - New Game
         </button>
       );
+    }
+    
+    // Show "New Game" button if no cards in hand (need to deal initial hand)
+    // or if both hand and deck are empty (complete reset needed)
+    if (handCards.length === 0 || shouldReset) {
+      return (
+        <button onClick={handleResetGame}>
+          {handCards.length === 0 && deckCards.length > 0 ? "New Game" : "New Round"}
+        </button>
+      );
+    }
+    
+    // Show play/discard buttons if cards are in hand
     return (
       <>
-        <button //prettier-ignore
-          onClick={handlePlayCards}
-          disabled={isDisabled}
-        >
-          Play Hand
+        <button onClick={handlePlayCards} disabled={isDisabled || !canPlay}>
+          Play Hand {level.turnsRemaining > 0 ? `(${level.turnsRemaining} turns left)` : '(No turns left)'}
         </button>
 
-        <button onClick={handleDiscardCards} disabled={isDisabled}>
-          Discard
+        <button onClick={handleDiscardCards} disabled={isDisabled || !canDiscard}>
+          Discard {level.discardsRemaining > 0 ? `(${level.discardsRemaining} discards left)` : '(No discards left)'}
         </button>
-
-        {renderResetButton()}
       </>
-    );
-  }
-
-  function renderResetButton() {
-    if ((handCards.length || deckCards.length) && gameStarted) return null;
-    return (
-      <button onClick={handleResetGame}>
-        {gameStarted ? "Reset" : "New Game"}
-      </button>
     );
   }
 
@@ -120,8 +184,7 @@ function GameControls({
     <div
       className="button-container"
       style={{
-        // opacity: disabled ? 0.5 : 1,
-        bottom: disabled ? 0 : -100,
+        bottom: game.allowInput ? 0 : -100,
       }}
     >
       {renderButtons()}

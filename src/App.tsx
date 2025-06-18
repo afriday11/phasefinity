@@ -1,80 +1,25 @@
-import { useReducer } from "react";
-import "./App.css";
-import GameControls from "./components/GameControls";
-import GameBoard from "./components/GameBoard";
-import ScoreDisplay from "./components/ScoreDisplay";
-import gameReducer, { State } from "./reducers/gameReducer";
-import scoreReducer, { initialScoreState } from "./reducers/scoreReducer";
-import { evaluateHand } from "./services/scoreService";
-import useDealer from "./hooks/useDealer";
-
-const initialState: State = {
-  gameStarted: false,
-  allowInput: true,
-  cards: [],
-};
+import './App.css'
+import GameBoard from './components/GameBoard'
+import GameControls from './components/GameControls'
+import ScoreDisplay from './components/ScoreDisplay'
+import { LevelDisplay } from './components/LevelDisplay'
+import { useAppContext } from './store/store'
 
 function App() {
-  const [gameState, gameDispatch] = useReducer(gameReducer, initialState);
-  const [scoreState, scoreDispatch] = useReducer(
-    scoreReducer,
-    initialScoreState
-  );
-  const { cards, isDealing } = useDealer(gameState.cards);
-
-  const canInteract = gameState.allowInput;
-
-  // the cards are in a single array so that React can animate them
-  // so we need to filter them out into separate arrays for each position
-  function getCardState() {
-    const deckCards = cards.filter((card) => card.position === "deck");
-    const handCards = cards.filter((card) => card.position === "hand");
-    const boardCards = cards.filter((card) => card.position === "board");
-    const discardPile = cards.filter((card) => card.position === "discard");
-    const selectedCards = handCards.filter((card) => card.selected);
-
-    return { deckCards, handCards, boardCards, discardPile, selectedCards };
-  }
-
-  const cardState = getCardState();
-
-  const handEvaluation =
-    cardState.selectedCards.length > 0 && evaluateHand(cardState.selectedCards);
-
-  function renderHandEvaluation() {
-    if (!handEvaluation) return null;
-
-    return (
-      <div
-        style={{
-          position: "absolute",
-          bottom: 300,
-          margin: "0 auto",
-          width: "100%",
-          textAlign: "center",
-        }}
-      >
-        <p>{handEvaluation.handType}</p>
-        <p>+{handEvaluation.score}</p>
-      </div>
-    );
-  }
+  const { state } = useAppContext();
+  const { score, level } = state;
 
   return (
-    <div>
-      {gameState.gameStarted && <ScoreDisplay score={scoreState} />}
-      {handEvaluation && renderHandEvaluation()}
-      <GameBoard cardState={cardState} dispatch={gameDispatch} />
-      <GameControls
-        disabled={canInteract}
-        isDealing={isDealing}
-        gameStarted={gameState.gameStarted}
-        cardState={cardState}
-        dispatch={gameDispatch}
-        scoreDispatch={scoreDispatch}
-      />
-    </div>
-  );
+    <>
+      <div className="title-container">
+        <h1>Phasefinity</h1>
+        <ScoreDisplay score={score} />
+        <LevelDisplay levelState={level} currentScore={score.currentScore} />
+      </div>
+      <GameBoard />
+      <GameControls />
+    </>
+  )
 }
 
-export default App;
+export default App 
