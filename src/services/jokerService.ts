@@ -4,6 +4,8 @@
  * This service handles the evaluation and application of joker bonuses
  * to the scoring system. It processes equipped jokers left-to-right
  * and applies their bonuses based on trigger conditions.
+ * 
+ * Updated to only apply bonuses to cards that contribute to the poker hand.
  */
 
 import { Joker, JokerResult } from '../types/jokerTypes';
@@ -16,7 +18,7 @@ import { Card } from '../store/game/gameSlice';
  * @param baseChips - Starting chip value before joker bonuses
  * @param baseMult - Starting multiplier before joker bonuses  
  * @param equippedJokers - Array of jokers currently equipped by player
- * @param playedCards - Cards in the current hand being evaluated
+ * @param contributingCards - ONLY cards that contribute to the poker hand (not all played cards)
  * @param handType - The poker hand type (pair, flush, etc.)
  * @returns JokerResult with final chips, multiplier, and bonus descriptions
  */
@@ -24,7 +26,7 @@ export function applyJokers(
   baseChips: number,
   baseMult: number,
   equippedJokers: Joker[],
-  playedCards: Card[],
+  contributingCards: Card[],
   handType: string
 ): JokerResult {
   let chips = baseChips;
@@ -33,7 +35,7 @@ export function applyJokers(
 
   // Process jokers left-to-right as specified
   for (const joker of equippedJokers) {
-    const bonus = evaluateJoker(joker, playedCards, handType);
+    const bonus = evaluateJoker(joker, contributingCards, handType);
     
     if (bonus.chipBonus > 0) {
       chips += bonus.chipBonus;
@@ -58,13 +60,13 @@ export function applyJokers(
  * to determine what bonuses it should provide.
  * 
  * @param joker - The joker to evaluate
- * @param playedCards - Cards in the current hand
+ * @param contributingCards - ONLY cards that contribute to the poker hand
  * @param handType - The poker hand type
  * @returns Object with chip and multiplier bonuses
  */
 function evaluateJoker(
   joker: Joker, 
-  playedCards: Card[], 
+  contributingCards: Card[], 
   handType: string
 ): { chipBonus: number; multBonus: number } {
   let chipBonus = 0;
@@ -81,9 +83,9 @@ function evaluateJoker(
       break;
 
     case 'onScoreSuit':
-      // Triggers once per matching card in the hand
+      // Triggers once per matching card in the contributing cards (not all played cards)
       if (joker.suit) {
-        const matchingCards = playedCards.filter(card => card.suit === joker.suit);
+        const matchingCards = contributingCards.filter(card => card.suit === joker.suit);
         const matches = matchingCards.length;
         
         if (matches > 0) {

@@ -56,7 +56,7 @@ function GameControls() {
     dispatch({ type: 'INCREMENT_TIMES_PLAYED', payload: { handType } });
 
     // Then, calculate the score for the hand (including joker bonuses).
-    const calculation = calculateScore(handType, selectedCards, handLevels, game.jokers);
+    const calculation = calculateScore(selectedCards, handLevels, game.jokers);
 
     // Update the score in the application state.
     dispatch({

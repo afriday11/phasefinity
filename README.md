@@ -49,7 +49,25 @@ export default tseslint.config({
 })
 ```
 
-Update notes for 12/12/2024
+Update notes for recent changes - recent at the top
+
+# **Scoring System Refactor - Contributing Cards Only**
+
+Refactored the scoring system to only apply bonuses to cards that actually contribute to the poker hand, not all played cards.
+
+## **Key Changes:**
+- **Hand Evaluator**: Now returns `contributingCards` array identifying which cards form the actual poker hand
+- **Score Calculator**: Only applies card bonuses (value, ace, face card, suit) to contributing cards
+- **Joker System**: Joker bonuses now only count towards cards that contribute to the hand
+- **Gameplay Impact**: Players can play extra cards that won't affect scoring - only the cards forming the poker combination count
+
+## **Examples:**
+- **Pair Hand**: If 5 cards are played but only 2 form a pair, only those 2 cards get bonuses
+- **Three of a Kind**: Only the 3 matching cards receive bonuses, not the other played cards
+- **High Card**: Only the highest value card gets bonuses
+- **Joker Effects**: Suit-based jokers only trigger on contributing cards, not all played cards
+
+---
 
 # **Powerup System - Complete Implementation**
 

@@ -41,7 +41,7 @@ function GameBoard() {
     }),
     ...Hand({
       cards: boardCards,
-      yOffset: 100,
+      yOffset: 200,
       splayed: true,
       anchor: "bottom",
     }),
@@ -167,11 +167,6 @@ function Hand({
           opacity: card.position === "discard" ? 0 : 1,
         }}
         onMouseDown={(e) => handleMouseDown(card, e)}
-        onMouseUp={() => {
-          if (isDragging) {
-            onClick?.(card);
-          }
-        }}
       >
         <Card selected={card.selected} card={card} />
       </div>

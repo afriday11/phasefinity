@@ -146,9 +146,9 @@ function App() {
     <>
       <div className="title-container">
         <h1>Phasefinity</h1>
-        <ScoreDisplay score={score} />
-        <LevelDisplay levelState={level} currentScore={score.currentScore} />
       </div>
+      <ScoreDisplay score={score} />
+      <LevelDisplay levelState={level} currentScore={score.currentScore} />
       <JokerDisplay equippedJokers={game.jokers} />
       <GameBoard />
       <GameControls />

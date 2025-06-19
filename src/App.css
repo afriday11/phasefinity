@@ -78,3 +78,21 @@
   box-sizing: border-box;
   transition: bottom 0.35s cubic-bezier(0.33, 1.41, 0.59, 1);
 }
+
+/* Title container styling - positions Phasefinity text below jokers */
+.title-container {
+  position: absolute;
+  top: 200px; /* Below the joker display which is at top: 20px */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 50;
+}
+
+.title-container h1 {
+  margin: 0;
+  opacity: 0.7; /* 70% opacity as requested */
+  font-size: 2.5em;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
