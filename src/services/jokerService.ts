@@ -129,4 +129,47 @@ export async function loadJokerCatalog(): Promise<Joker[]> {
     console.error('Failed to load joker catalog:', error);
     return [];
   }
+}
+
+/**
+ * Randomly selects a specified number of jokers from the available catalog.
+ * Filters out jokers that are already equipped to prevent duplicates.
+ * 
+ * @param count - Number of jokers to select (typically 3 for powerup screen)
+ * @param equippedJokers - Currently equipped jokers to exclude from selection
+ * @param runNumber - Current run number to check unlock requirements (defaults to 0)
+ * @returns Promise resolving to array of randomly selected jokers
+ */
+export async function getRandomJokers(
+  count: number, 
+  equippedJokers: Joker[] = [], 
+  runNumber: number = 0
+): Promise<Joker[]> {
+  try {
+    const allJokers = await loadJokerCatalog();
+    
+    // Filter out jokers that are already equipped and check unlock requirements
+    const equippedIds = new Set(equippedJokers.map(j => j.id));
+    const availableJokers = allJokers.filter(joker => 
+      !equippedIds.has(joker.id) && joker.unlockAtRun <= runNumber
+    );
+
+    // If we don't have enough available jokers, return what we can
+    if (availableJokers.length <= count) {
+      console.warn(`Only ${availableJokers.length} jokers available, requested ${count}`);
+      return availableJokers;
+    }
+
+    // Randomly shuffle and take the requested count
+    const shuffled = [...availableJokers];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled.slice(0, count);
+  } catch (error) {
+    console.error('Failed to get random jokers:', error);
+    return [];
+  }
 } 

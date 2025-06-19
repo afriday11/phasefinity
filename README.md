@@ -51,6 +51,34 @@ export default tseslint.config({
 
 Update notes for 12/12/2024
 
+# **Powerup System - Complete Implementation**
+
+Added comprehensive powerup selection system where players earn jokers at the beginning of each level by choosing from 3 randomly selected options.
+
+## **Powerup Earning System**
+
+### **How Players Earn Jokers:**
+- **Game Start**: After clicking "New Game" and cards are dealt, the powerup screen appears for level 1
+- **Level Progression**: When advancing to higher levels, the powerup screen appears automatically
+- **Random Selection**: 3 jokers are randomly chosen from available options (excludes already equipped jokers)
+- **Player Choice**: Players can select 1 joker or skip the selection entirely  
+- **Immediate Application**: Selected jokers are immediately equipped and affect scoring
+
+### **Powerup Screen Features:**
+- **Full-Screen Overlay**: Modal popup with clean, focused interface
+- **3 Selection Cards**: Each shows joker name, bonus type/value, and trigger condition
+- **Hover Effects**: Interactive feedback with golden highlighting
+- **Skip Option**: Players can choose to skip and receive no powerup
+- **Auto-Close**: Screen closes automatically after selection or skip
+
+### **Technical Implementation:**
+- **Random Selection Service**: `getRandomJokers()` function filters and shuffles available jokers
+- **Powerup State Management**: Dedicated Redux slice for powerup screen state
+- **Extensible Design**: System built to handle future powerup types beyond jokers
+- **Level Integration**: Triggers automatically on level start and level progression
+
+---
+
 # **Joker System - Phase 1 Implementation**
 
 Added comprehensive joker system with passive power-ups that modify scoring based on hand types and card suits.
@@ -348,17 +376,29 @@ Fixed critical level progression issues where turns, discards, and level complet
 - **Result**: Players can now play any selection of cards, with multiple unrelated cards scoring as high card based on highest value
 
 ---
-## **How to Test Jokers**
+## **How to Test the Powerup System**
 
-### **In Browser Console:**
+### **Normal Gameplay:**
+1. Start the game with `npm run dev`
+2. Click "New Game" to deal cards to your hand
+3. Powerup screen appears with 3 random jokers to choose from
+4. Select a joker or click "Skip" to continue
+5. Play through level 1 and advance to level 2
+6. Powerup screen appears again with new joker options
+7. Equipped jokers show in the top-center display and affect scoring
+
+### **Debug Console Commands:**
 ```javascript
-// Add test jokers to the game
+// Add test jokers directly (bypasses powerup screen)
 window.debugGame.addTestJokers()
 
-// Access current game state
+// Access current game state (includes powerup state)
 window.debugGame.state
 
-// Manual dispatch (advanced)
+// Manual powerup screen trigger (advanced)
+window.debugGame.dispatch({type: 'SHOW_POWERUPS', payload: {powerups: [...]}})
+
+// Manual joker equip (advanced)
 window.debugGame.dispatch({type: 'EQUIP_JOKER', payload: {joker: someJoker}})
 ```
 
@@ -367,9 +407,9 @@ window.debugGame.dispatch({type: 'EQUIP_JOKER', payload: {joker: someJoker}})
 - **Greedy Joker**: +3 multiplier per diamond card
 - **Jolly Joker**: +8 multiplier for pair hands
 
-### **Usage Instructions:**
-1. Start the game with `npm run dev`
-2. Open browser console (F12)
-3. Type `window.debugGame.addTestJokers()` and press Enter
-4. Check joker display area to see equipped jokers
-5. Play cards to see joker bonuses in score breakdown
+### **Testing Features:**
+- **Powerup Generation**: 3 random jokers appear at level start
+- **Duplicate Prevention**: Already equipped jokers won't appear as options
+- **Unlock System**: Jokers respect `unlockAtRun` requirements
+- **UI Interaction**: Click jokers to select, or "Skip" to pass
+- **Score Integration**: Selected jokers immediately affect hand scoring

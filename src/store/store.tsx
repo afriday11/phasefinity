@@ -4,10 +4,12 @@ import scoreReducer, { initialScoreState } from './score/scoreSlice';
 import levelReducer, { initialLevelState } from './level/levelSlice';
 import handLevelsReducer, { initialHandLevelsState, HandLevelsState } from './handLevels/handLevelsSlice';
 import economyReducer, { initialEconomyState } from './economy/economySlice';
+import powerupReducer, { initialPowerupState } from './powerup/powerupSlice';
 import { ScoreState } from '../types/scoreTypes';
 import { LevelState } from '../types/levelTypes';
 import { PlayerEconomyState } from '../types/economyTypes';
-import { GameAction, ScoreAction, LevelAction, HandLevelsAction, EconomyAction } from '../types/actions.ts';
+import { PowerupState } from '../types/powerupTypes';
+import { GameAction, ScoreAction, LevelAction, HandLevelsAction, EconomyAction, PowerupAction } from '../types/actions.ts';
 
 // The store is the main component that manages the game state.
 // It uses the useReducer hook to manage the state.
@@ -22,10 +24,11 @@ export interface AppState {
   level: LevelState;
   handLevels: HandLevelsState;
   economy: PlayerEconomyState;
+  powerup: PowerupState;
 }
 
 // Combine all possible action types
-type AppAction = GameAction | ScoreAction | LevelAction | HandLevelsAction | EconomyAction;
+type AppAction = GameAction | ScoreAction | LevelAction | HandLevelsAction | EconomyAction | PowerupAction;
 
 // 2. Define the initial state for the entire application
 const initialState: AppState = {
@@ -41,6 +44,7 @@ const initialState: AppState = {
   level: initialLevelState,
   handLevels: initialHandLevelsState,
   economy: initialEconomyState,
+  powerup: initialPowerupState,
 };
 
 // 3. Create the root reducer
@@ -107,6 +111,16 @@ const rootReducer = (state: AppState, action: AppAction): AppState => {
       return {
         ...state,
         economy: economyReducer(state.economy, action as EconomyAction),
+      };
+
+    // Powerup actions
+    case 'SHOW_POWERUPS':
+    case 'SELECT_POWERUP':
+    case 'SKIP_POWERUPS':
+    case 'CLOSE_POWERUPS':
+      return {
+        ...state,
+        powerup: powerupReducer(state.powerup, action as PowerupAction),
       };
 
     default:

@@ -94,4 +94,7 @@ export type EconomyAction =
   | AddJokerAction
   | RemoveJokerAction
   | UpgradeHandAction
-  | ResetEconomyAction; 
+  | ResetEconomyAction;
+
+// Re-export PowerupAction for store integration
+export type { PowerupAction } from "./powerupTypes"; 
