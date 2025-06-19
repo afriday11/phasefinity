@@ -23,6 +23,7 @@ function PowerupScreen({ isVisible, availablePowerups, onSelectPowerup, onSkip }
   return (
     <div className="powerup-screen-overlay">
       <div className="powerup-screen">
+        <h1 className="powerup-header">Level Cleared!</h1>
         <h2 className="powerup-title">Choose a Powerup</h2>
         
         <div className="powerup-options">
