@@ -16,18 +16,13 @@
 ## 2. High‑Level Flow
 
 ```
-App.tsx
- └── store/store.tsx (AppProvider)
-      ├── rootReducer(game, score, level, handLevels)
-      ├── <GameBoard/> (consumes context)
-      ├── <GameControls/> (consumes context)
-      └── <ScoreDisplay/>, <LevelDisplay/>
+TO DO  
 ```
 
 1.  **Start →** `AppProvider` initializes the store; `INITIALIZE_GAME` creates a shuffled deck.
 2.  **Deal →** `GameControls` dispatches actions to move cards from `deck` ➜ `hand`.
 3.  **Play →** Player drags cards; positions live in `Card.position`.
-4.  **Evaluate →** On “Play Hand” in `GameControls`, the pipeline runs:
+4.  **Evaluate →** On "Play Hand" in `GameControls`, the pipeline runs:
     `handEvaluator.ts` » `scoreManager.ts`.
 5.  The single `rootReducer` updates the appropriate state slice, UI re‑renders.
 
@@ -105,3 +100,128 @@ interface ScoreCalculation {
 | 1  | **Reducers sprawl** – three separate reducers glued together in `App.tsx`. | **DONE.** Switched to a single `rootReducer` with a global `AppContext` provider. All state is managed in one place. |
 | 2  | **Mutable `Map` inside `HandLevelService`** leaks via methods.             | **DONE.** Replaced with a `handLevels` state slice and pure functions in `handLevelManager.ts` for calculations. |
 | 3  | **Config duplication** (`scoreConfig.json` vs in‑code defaults).           | **DONE.** Merged all numeric tables into a single `gameConfig.json`. All services and reducers now read from this file. |
+
+---
+
+## 8. Current Scoring Pipeline - Technical Documentation
+
+### 8.1 Narrative Walkthrough
+
+| Step | File / Function | What Happens | Data Touched |
+|------|----------------|--------------|--------------|
+| ① | Player clicks Play Hand button | `GameControls.tsx` → score calculation pipeline | `gameState.cards` (board position), selected hand |
+| ② | Hand evaluation | `evaluateHand(cards)` in `handEvaluator.ts` | Returns `{ handType, highCard }` |
+| ③ | Score calculation | `calculateScore()` in `scoreCalculator.ts` | Looks up base values from `gameConfig.json.hands[handType]` |
+| ④ | Bonuses applied | `calculateCardValueBonuses()` & `calculateOtherBonuses()` | Accumulates chip bonuses and multiplier bonuses from card values and special conditions |
+| ⑤ | Final maths | Still in `calculateScore()` | `finalScore = currentChips × currentMultiplier` |
+| ⑥ | Progress check | Score dispatch → level progression logic | Updates `totalScore`, checks against `requiredScore` for level completion |
+
+**Key Implementation Note:** Chip bonuses and multiplier bonuses are **additive**, not multiplicative. This is crucial for game balance.
+
+### 8.2 Mermaid Flow Diagram
+
+```mermaid
+flowchart TD
+    A[Player clicks Play Hand] --> B[evaluateHand - handEvaluator.ts]
+    B --> C{Hand Type Detection}
+    C --> D[Lookup baseChips & multiplier<br/>from gameConfig.json]
+    D --> E[calculateCardValueBonuses]
+    E --> F[calculateOtherBonuses]
+    F --> G[chipBonus accumulation<br/>+= cardValues, +special bonuses]
+    F --> H[multiplierBonus accumulation<br/>*= ace/face bonuses]
+    G --> I[currentChips = baseChips + chipBonus]
+    H --> J[currentMultiplier = baseMultiplier * multiplierBonus]
+    I --> K[finalScore = currentChips × currentMultiplier]
+    J --> K
+    K --> L[Update totalScore += finalScore]
+    L --> M[Check level progression]
+```
+
+---
+
+## 9. Upgrade Economy System - Specification Draft
+
+### 9.1 Shared Domain Types (TypeScript)
+
+The following interfaces define the core data structures for the upgrade economy:
+
+```typescript
+/** Point-in-time score data for different hand types */
+export interface HandScoreConfig {
+  name: string;          // "Pair", "Straight", etc.
+  baseChips: number;     // chips awarded before bonuses
+  multiplier: number;    // base multiplier
+}
+
+/** Configuration for purchasable joker cards */
+export interface JokerConfig {
+  id: string;            // "mult_+1", "chips_+10", etc.
+  label: string;         // UI display name
+  description: string;   // tooltip/description text
+  chipBonus: number;     // additive chip bonus
+  multiplierBonus: number; // additive multiplier bonus  
+  price: number;         // cost in coins
+  rarity: 'common'|'rare'|'legendary';
+}
+
+/** Configuration for hand-specific upgrades */
+export interface HandUpgradeConfig {
+  handType: keyof typeof handScores; // 'pair'|'twoPair'|etc.
+  chipDelta: number;                 // +N chips per upgrade tier
+  multDelta: number;                 // +N multiplier per upgrade tier
+  levelCap: number;                  // maximum upgrade tiers
+  basePrice: number;                 // price for tier 1
+}
+
+/** Items available for purchase in the shop */
+export interface ShopItem {
+  type: 'joker'|'handUpgrade';
+  data: JokerConfig | {upgrade: HandUpgradeConfig; tier: number};
+  price: number;  // cached for price stability
+}
+
+/** Player's economic state and inventory */
+export interface PlayerEconomyState {
+  coins: number;
+  ownedJokers: JokerConfig[];
+  handUpgrades: Record<string /*handType*/, number /*current tier*/>;
+}
+```
+
+### 9.2 Coins System
+
+| Rule | Value |
+|------|-------|
+| Level completion reward | +5 coins (flat) |
+| Unused hands bonus | +1 coin × handsRemaining |
+| Storage | `playerState.coins` in memory → localStorage |
+
+**Implementation Strategy:**
+- Add `grantCoins(amount)` helper for centralized UI toasts and SFX
+- Hook into existing level completion logic where `turnsTaken` is reset
+
+### 9.3 Shop System
+
+| Requirement | Implementation Detail |
+|-------------|----------------------|
+| **Trigger** | Immediately after level completion, before `setupNewLevel()` |
+| **Inventory** | 3-5 random `ShopItems`: 70% jokers, 30% hand upgrades |
+| **UI** | Overlay panel with item cards showing icon, name, description, price |
+| **Transaction** | `onBuy(item)` → deduct coins → update `playerState` → remove from shop |
+| **Persistence** | Save `playerState` to localStorage after each purchase |
+
+### 9.4 Implementation Phases
+
+**Phase 1** ✅ - Architecture documentation  
+**Phase 2** ✅ - Shared domain types  
+**Phase 3** 🚧 - Coins system  
+**Phase 4** 📋 - Shop system  
+**Phase 5** 📋 - Jokers 2.0 (JSON configuration)  
+**Phase 6** 📋 - Hand-specific upgrades  
+**Phase 7** 📋 - Items slot (consumables placeholder)  
+
+### 9.5 Future Enhancements
+
+- **Joker rarity balancing**: `price = floor((chipBonus * 0.8) + (multiplierBonus * 5)) * rarityMultiplier`
+- **Hand upgrade pricing**: Geometric scaling `price = basePrice × 1.75^tier`
+- **Consumable items**: One-shot effects that manipulate draw pile or allow discards/redraws

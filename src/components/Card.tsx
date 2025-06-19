@@ -1,4 +1,8 @@
-import { Card as CardType } from "../reducers/gameReducer";
+import { Card as CardType } from "../store/game/gameSlice";
+
+// Card component renders individual playing cards with suit symbols and values.
+// It handles visual feedback for selected state and provides smooth animations.
+// The card shows suit symbols in corners and center, with proper color coding.
 
 type cardProps = {
   card: CardType;
@@ -6,6 +10,7 @@ type cardProps = {
 };
 
 function Card({ card, selected }: cardProps) {
+  // Map card suits to their Unicode symbols
   const emoji = {
     hearts: "♥",
     diamonds: "♦",
@@ -13,6 +18,7 @@ function Card({ card, selected }: cardProps) {
     spades: "♠",
   }[card.suit];
 
+  // Define colors for red and black suits
   const color = {
     hearts: "rgb(184, 41, 60)",
     diamonds: "rgb(184, 41, 60)",
@@ -33,6 +39,8 @@ function Card({ card, selected }: cardProps) {
         <span>{card.label}</span>
         <span className="noto-emoji-phasefinity">{emoji}</span>
       </span>
+      
+      {/* Bottom-right corner: rotated card value and suit */}
       <span
         className="card-value"
         style={{
@@ -45,6 +53,8 @@ function Card({ card, selected }: cardProps) {
         <span>{card.label}</span>
         <span className="noto-emoji-phasefinity">{emoji}</span>
       </span>
+      
+      {/* Center: large suit symbol */}
       <div
         style={{
           position: "absolute",

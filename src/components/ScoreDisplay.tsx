@@ -1,4 +1,5 @@
 import { ScoreState } from "../types/scoreTypes";
+import { useAppContext } from "../store/store";
 import "./ScoreDisplay.css";
 
 interface ScoreDisplayProps {
@@ -6,6 +7,9 @@ interface ScoreDisplayProps {
 }
 
 function ScoreDisplay({ score }: ScoreDisplayProps) {
+  const { state } = useAppContext();
+  const coins = state.economy.coins;
+
   return (
     <div className="score-display">
       {score.currentChips && score.currentMultiplier && (
@@ -26,6 +30,10 @@ function ScoreDisplay({ score }: ScoreDisplayProps) {
         </div>
       )}
       
+      <div className="score-item">
+        <span className="score-label">Coins:</span>
+        <span className="score-value">🪙 {coins}</span>
+      </div>
       <div className="score-item">
         <span className="score-label">Score:</span>
         <span className="score-value">{score.currentScore}</span>

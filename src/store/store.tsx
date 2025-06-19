@@ -3,9 +3,11 @@ import gameReducer, { State as GameState } from './game/gameSlice';
 import scoreReducer, { initialScoreState } from './score/scoreSlice';
 import levelReducer, { initialLevelState } from './level/levelSlice';
 import handLevelsReducer, { initialHandLevelsState, HandLevelsState } from './handLevels/handLevelsSlice';
+import economyReducer, { initialEconomyState } from './economy/economySlice';
 import { ScoreState } from '../types/scoreTypes';
 import { LevelState } from '../types/levelTypes';
-import { GameAction, ScoreAction, LevelAction, HandLevelsAction } from '../types/actions.ts';
+import { PlayerEconomyState } from '../types/economyTypes';
+import { GameAction, ScoreAction, LevelAction, HandLevelsAction, EconomyAction } from '../types/actions.ts';
 
 // The store is the main component that manages the game state.
 // It uses the useReducer hook to manage the state.
@@ -19,10 +21,11 @@ export interface AppState {
   score: ScoreState;
   level: LevelState;
   handLevels: HandLevelsState;
+  economy: PlayerEconomyState;
 }
 
 // Combine all possible action types
-type AppAction = GameAction | ScoreAction | LevelAction | HandLevelsAction;
+type AppAction = GameAction | ScoreAction | LevelAction | HandLevelsAction | EconomyAction;
 
 // 2. Define the initial state for the entire application
 const initialState: AppState = {
@@ -36,6 +39,7 @@ const initialState: AppState = {
   score: initialScoreState,
   level: initialLevelState,
   handLevels: initialHandLevelsState,
+  economy: initialEconomyState,
 };
 
 // 3. Create the root reducer
@@ -87,6 +91,18 @@ const rootReducer = (state: AppState, action: AppAction): AppState => {
       return {
         ...state,
         handLevels: handLevelsReducer(state.handLevels, action as HandLevelsAction),
+      };
+
+    // Economy actions
+    case 'GRANT_COINS':
+    case 'SPEND_COINS':
+    case 'ADD_JOKER':
+    case 'REMOVE_JOKER':
+    case 'UPGRADE_HAND':
+    case 'RESET_ECONOMY':
+      return {
+        ...state,
+        economy: economyReducer(state.economy, action as EconomyAction),
       };
 
     default:

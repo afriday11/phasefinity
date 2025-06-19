@@ -9,6 +9,12 @@ export interface BonusContext {
   currentScore: ScoreCalculation;
 }
 
+export interface BonusResult {
+  multiplier: number;
+  chips: number;
+  description: string;
+}
+
 export interface Bonus {
   id: string;
   name: string;

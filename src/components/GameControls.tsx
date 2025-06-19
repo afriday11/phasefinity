@@ -3,7 +3,7 @@ import { useAppContext } from '../store/store';
 import { evaluateHand } from '../services/handEvaluator';
 import { calculateScore } from '../services/scoreManager';
 import { checkLevelComplete, checkGameOver } from '../services/levelService';
-import React from 'react';
+import { grantLevelCompletionCoins } from '../services/coinService';
 
 // GameControls is the component that manages the game controls, including: 
 // the play cards button, the discard cards button, and the reset game button.
@@ -96,6 +96,16 @@ function GameControls() {
     
     if (checkLevelComplete(newScore, level.currentLevel)) {
       console.log("🎉 Level complete! Moving to next level...");
+      
+      // COINS: Grant coins for completing the level
+      const handsRemaining = Math.max(0, level.turnsRemaining - 1); // Remaining after this turn
+      console.log(`💰 Level completion details:`, {
+        turnsRemaining: level.turnsRemaining,
+        handsRemaining: handsRemaining,
+        levelCompleted: level.currentLevel
+      });
+      grantLevelCompletionCoins(dispatch, handsRemaining);
+      
       dispatch({ type: 'NEXT_LEVEL' });
       
       // FIXED: Reset everything for the new level
@@ -109,6 +119,7 @@ function GameControls() {
       const turnsAfterUse = level.turnsRemaining - 1;
       if (checkGameOver(turnsAfterUse, newScore, level.requiredScore)) {
         console.log("💀 Game Over! Not enough turns to reach required score.");
+        // No coins for game over
         dispatch({ type: 'GAME_OVER' });
       }
     }
@@ -142,6 +153,7 @@ function GameControls() {
     dispatch({ type: 'RESET_LEVEL' });
     dispatch({ type: 'RESET_SCORE' });
     dispatch({ type: 'RESET_HAND_LEVELS' });
+    dispatch({ type: 'RESET_ECONOMY' });
     dispatch({ type: "DRAW_CARDS", payload: 8 });
     console.log("🃏 Dealt 8 cards to hand");
   }

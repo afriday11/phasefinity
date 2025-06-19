@@ -1,5 +1,4 @@
-import { Bonus } from './types';
-import { BonusResult } from '../../types/scoreTypes';
+import { Bonus, BonusResult, BonusContext } from './types';
 
 export const cardFaceChipBonus: Bonus = {
   id: 'cardFaceChipBonus',
@@ -8,10 +7,12 @@ export const cardFaceChipBonus: Bonus = {
   priority: 1, // First bonus to be applied
   
 
-  calculate: (): BonusResult => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  calculate: (_context: BonusContext): BonusResult => {
     // Placeholder for now
     return {
-      chipBonus: 0,
+      multiplier: 1,
+      chips: 0,
       description: 'Card Face Bonus: Placeholder'
     };
   }

@@ -1,7 +1,8 @@
-
+// This file contains the action types for the game, including the game, score, and level actions.
 
 import { Card } from "../store/game/gameSlice";
 import { HandType } from "./scoreTypes";
+import { JokerConfig } from "./economyTypes";
 
 // Game Actions
 interface InitializeGameAction { type: 'INITIALIZE_GAME'; }
@@ -70,4 +71,20 @@ export type HandLevelsAction =
   | IncrementTimesPlayedAction
   | UpgradeHandBaseLevelAction
   | UpgradeHandRunMultiplierAction
-  | ResetHandLevelsAction; 
+  | ResetHandLevelsAction;
+
+// Economy Actions
+interface GrantCoinsAction { type: 'GRANT_COINS'; payload: { amount: number; reason?: string }; }
+interface SpendCoinsAction { type: 'SPEND_COINS'; payload: { amount: number; reason?: string }; }
+interface AddJokerAction { type: 'ADD_JOKER'; payload: { joker: JokerConfig }; }
+interface RemoveJokerAction { type: 'REMOVE_JOKER'; payload: { jokerId: string }; }
+interface UpgradeHandAction { type: 'UPGRADE_HAND'; payload: { handType: string }; }
+interface ResetEconomyAction { type: 'RESET_ECONOMY'; }
+
+export type EconomyAction =
+  | GrantCoinsAction
+  | SpendCoinsAction
+  | AddJokerAction
+  | RemoveJokerAction
+  | UpgradeHandAction
+  | ResetEconomyAction; 

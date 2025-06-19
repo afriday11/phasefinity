@@ -51,6 +51,75 @@ export default tseslint.config({
 
 Update notes for 12/12/2024
 
+# **Upgrade Economy System - Foundation Implementation**
+
+Added comprehensive upgrade economy foundation with coin system, domain types, and architectural documentation.
+
+## **New Features Added**
+
+### **1. Economy Domain Types (economyTypes.ts)**
+- **JokerConfig**: Defines purchasable joker cards with chip/multiplier bonuses and rarity tiers
+- **HandUpgradeConfig**: Configures hand-specific upgrades with scaling costs and level caps
+- **ShopItem**: Structure for shop inventory with jokers and hand upgrades
+- **PlayerEconomyState**: Player's coins, owned jokers, and hand upgrade levels
+- **Constants**: Rarity multipliers, shop configuration, and coin reward values
+
+### **2. Economy State Management (economySlice.ts)**
+- **Coin Transactions**: GRANT_COINS and SPEND_COINS actions with validation
+- **Joker Management**: ADD_JOKER and REMOVE_JOKER actions with duplicate prevention
+- **Hand Upgrades**: UPGRADE_HAND action to improve specific hand types
+- **Economy Reset**: Full state reset functionality for testing and new games
+- **Comprehensive Logging**: All transactions logged for debugging and transparency
+
+### **3. Coin Service (coinService.ts)**
+- **Centralized Coin Granting**: `grantCoins()` function for all coin rewards
+- **Level Completion Rewards**: Automatic coin calculation based on efficiency (+5 base + 1 per unused hand)
+- **Purchase Validation**: `spendCoins()` with insufficient funds protection
+- **Future-Ready**: Placeholder for UI toasts, sound effects, and animations
+
+### **4. UI Components (ScoreDisplay.tsx)**
+- **Integrated Coin Display**: Coins now shown within the score display UI for cleaner interface
+- **Real-Time Balance**: Live display of player's current coin balance
+- **Unified Interface**: Score, coins, and game progress all in one consolidated display
+
+### **5. Store Integration (store.tsx)**
+- **Economy Slice**: Added economy state to main application store
+- **Action Routing**: Integrated economy actions into root reducer
+- **Type Safety**: Full TypeScript support for all economy-related state
+
+## **Architecture Enhancements**
+
+### **1. Comprehensive Documentation (architecture.md)**
+- **Current Scoring Pipeline**: Detailed walkthrough with data flow diagram
+- **Technical Specification**: Complete upgrade economy design document
+- **Implementation Phases**: Clear roadmap for remaining development work
+- **Domain Types**: TypeScript interfaces for entire upgrade system
+
+### **2. Action System Updates (actions.ts)**
+- **Economy Actions**: Added all economy-related action types
+- **Type Safety**: Proper TypeScript interfaces for all payloads
+- **Consistent Patterns**: Follows existing action architecture conventions
+
+## **Coin System Rules**
+- **Level Completion**: +5 coins base reward
+- **Efficiency Bonus**: +1 coin per unused hand/turn
+- **Starting Balance**: 10 coins for initial purchases
+- **Validation**: All transactions validate sufficient funds before processing
+
+## **Development Impact**
+- **Scalable Foundation**: Ready for joker system, shop implementation, and hand upgrades
+- **Type Safety**: Full TypeScript coverage prevents runtime errors
+- **Separation of Concerns**: Economy logic isolated from game mechanics
+- **Future-Ready**: Architecture supports consumables, shop system, and complex upgrade paths
+
+## **Working Features**
+- **Coin Earning**: Players earn coins when completing levels (5 base + 1 per unused hand)
+- **Coin Display**: Live coin balance integrated into score display for streamlined UI
+- **Level Completion Popup**: Shows win/loss status with detailed coin earnings breakdown
+- **Continue Flow**: Smooth transition between levels with proper coin rewards
+
+---
+
 # **React Strict Mode Double-Firing Fix**
 
 Fixed double-firing of events and debug logs that were making debugging confusing.

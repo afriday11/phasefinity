@@ -34,14 +34,14 @@ function GameBoard() {
   const cardsToRender = [
     ...Hand({
       cards: handCards,
-      yOffset: 250,
+      yOffset: 350,
       splayed: true,
       anchor: "bottom",
       onClick: handleCardClick,
     }),
     ...Hand({
       cards: boardCards,
-      yOffset: 500,
+      yOffset: 100,
       splayed: true,
       anchor: "bottom",
     }),
