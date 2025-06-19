@@ -82,7 +82,7 @@
 /* Title container styling - positions Phasefinity text below jokers */
 .title-container {
   position: absolute;
-  top: 200px; /* Below the joker display which is at top: 20px */
+  top: 250px; /* Below the joker display which is at top: 20px */
   left: 50%;
   transform: translateX(-50%);
   text-align: center;

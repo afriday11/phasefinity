@@ -41,7 +41,7 @@ function GameBoard() {
     }),
     ...Hand({
       cards: boardCards,
-      yOffset: 200,
+      yOffset: 700, // placement of cards after they are played
       splayed: true,
       anchor: "bottom",
     }),

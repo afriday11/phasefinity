@@ -60,10 +60,33 @@ const gameReducer = createReducer<State, GameAction>({
 
   TOGGLE_CARD_SELECTION: (state: State, action): State => {
     console.log("TOGGLE_CARD_SELECTION", action.payload);
+    
+    // Find the card being clicked
+    const targetCard = state.cards.find(card => card.id === action.payload.id);
+    if (!targetCard) return state;
+    
+    // If card is currently selected, always allow deselection
+    if (targetCard.selected) {
+      return {
+        ...state,
+        cards: state.cards.map((card) =>
+          card.id === action.payload.id ? { ...card, selected: false } : card
+        ),
+      };
+    }
+    
+    // If card is not selected, check if we're at the 5-card limit
+    const selectedCards = state.cards.filter(card => card.selected && card.position === "hand");
+    if (selectedCards.length >= 5) {
+      console.log("🚫 Cannot select more than 5 cards");
+      return state; // Don't allow selection if already at limit
+    }
+    
+    // Allow selection if under the limit
     return {
       ...state,
       cards: state.cards.map((card) =>
-        card.id === action.payload.id ? { ...card, selected: !card.selected } : card
+        card.id === action.payload.id ? { ...card, selected: true } : card
       ),
     };
   },
