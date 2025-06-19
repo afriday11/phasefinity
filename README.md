@@ -51,6 +51,89 @@ export default tseslint.config({
 
 Update notes for 12/12/2024
 
+# **Joker System - Phase 1 Implementation**
+
+Added comprehensive joker system with passive power-ups that modify scoring based on hand types and card suits.
+
+## **New Features Added**
+
+### **1. Joker Types System (jokerTypes.ts)**
+- **Joker Interface**: Complete type definitions matching jokers.json structure
+- **Trigger Types**: `'always'`, `'onScoreSuit'`, `'onHandType'` activation conditions
+- **Reward Types**: `'mult'` and `'chips'` bonus categories
+- **Hand Context**: Evaluation context passed to joker scoring functions
+
+### **2. Joker Evaluation Service (jokerService.ts)**
+- **Left-to-Right Processing**: Jokers execute in order as specified in requirements
+- **Trigger Logic**: Handles all three trigger types with proper card/hand matching
+- **Bonus Calculation**: Separate chip and multiplier bonus accumulation
+- **Catalog Loading**: Async function to load joker definitions from JSON
+
+### **3. Score Calculator Integration (scoreCalculator.ts)**
+- **Joker Integration Point**: Added Step 4 joker processing after existing bonuses
+- **Preserved Scoring Flow**: Maintains existing chip/multiplier calculation pipeline
+- **Bonus Descriptions**: Joker effects included in score breakdown display
+- **Optional Parameter**: Backwards compatible with existing scoring calls
+
+### **4. Joker Display UI (JokerDisplay.tsx + CSS)**
+- **5-Slot Layout**: Fixed 5 joker slots showing equipped status and empty slots
+- **Top-Center Positioning**: Follows LevelDisplay design patterns for consistency
+- **Joker Information**: Shows name, bonus type, value, and trigger condition
+- **Visual Hierarchy**: Clear display of joker stats and activation conditions
+
+### **5. Enhanced Score Display (ScoreDisplay.tsx)**
+- **Bonus Breakdown**: Line-by-line display of all bonuses including jokers
+- **Improved Readability**: Separated bonus descriptions with proper line breaks
+- **Real-Time Updates**: Shows joker contributions to current hand scoring
+
+### **6. Game State Management (gameSlice.ts)**
+- **Joker State**: Added jokers array to game state (max 5 equipped)
+- **Joker Actions**: EQUIP_JOKER, UNEQUIP_JOKER, CLEAR_EQUIPPED_JOKERS
+- **Validation**: Maximum 5 jokers enforced at state level
+
+## **Joker Data Configuration**
+
+### **15 Basic Jokers Implemented (jokers.json)**
+- **Always Active**: Base joker (+4 mult always)
+- **Suit-Based**: Greedy/Lusty/Wrathful/Gluttonous jokers (+3 mult per matching suit card)
+- **Hand Type-Based**: Jolly/Zany/Mad/Crazy/Droll jokers (mult bonuses for specific hands)
+- **Chip-Based**: Sly/Wily/Clever/Devious/Crafty jokers (chip bonuses for specific hands)
+
+### **Trigger System**
+- **Always**: Activates once per hand regardless of cards
+- **onScoreSuit**: Activates once per matching suit card in hand  
+- **onHandType**: Activates once per hand if hand type matches
+
+## **Technical Implementation**
+
+### **Integration Flow**
+1. **Hand Evaluation**: Standard poker hand evaluation
+2. **Base Scoring**: Chips and multiplier from game config
+3. **Card Bonuses**: Individual card value bonuses
+4. **Other Bonuses**: Existing game bonuses (ace, face cards, etc.)
+5. **🆕 Joker Bonuses**: New step - left-to-right joker evaluation
+6. **Final Calculation**: `chips × multiplier = final score`
+
+### **Data-Driven Design**
+- **No Hard-Coded Logic**: All joker behavior defined in JSON configuration
+- **Single Evaluation Function**: Universal joker processor handles all types
+- **Extensible**: New jokers can be added by adding JSON entries only
+
+## **Development Tools**
+
+### **Debug Utilities (debugJokers.ts)**
+- **Test Jokers**: Pre-defined jokers for testing different trigger types
+- **Browser Console**: `addTestJokers()` function available globally
+- **Quick Testing**: Instantly equip test jokers to see system in action
+
+## **UI/UX Features**
+- **Visual Feedback**: Empty slots communicate 5-joker limit to players
+- **Joker Information**: Clear display of what each joker does and when it triggers
+- **Score Transparency**: Detailed breakdown showing exactly how jokers affected the score
+- **Consistent Styling**: Follows existing game UI patterns and color schemes
+
+---
+
 # **Upgrade Economy System - Foundation Implementation**
 
 Added comprehensive upgrade economy foundation with coin system, domain types, and architectural documentation.
@@ -263,3 +346,30 @@ Fixed critical level progression issues where turns, discards, and level complet
 - **Problem**: Multiple cards with no combinations were incorrectly blocked as "invalid hands"
 - **Fix**: Removed validation that prevented playing multiple unrelated cards as high card hands
 - **Result**: Players can now play any selection of cards, with multiple unrelated cards scoring as high card based on highest value
+
+---
+## **How to Test Jokers**
+
+### **In Browser Console:**
+```javascript
+// Add test jokers to the game
+window.debugGame.addTestJokers()
+
+// Access current game state
+window.debugGame.state
+
+// Manual dispatch (advanced)
+window.debugGame.dispatch({type: 'EQUIP_JOKER', payload: {joker: someJoker}})
+```
+
+### **Available Test Jokers:**
+- **Basic Joker**: +4 multiplier (always active)
+- **Greedy Joker**: +3 multiplier per diamond card
+- **Jolly Joker**: +8 multiplier for pair hands
+
+### **Usage Instructions:**
+1. Start the game with `npm run dev`
+2. Open browser console (F12)
+3. Type `window.debugGame.addTestJokers()` and press Enter
+4. Check joker display area to see equipped jokers
+5. Play cards to see joker bonuses in score breakdown

@@ -1,6 +1,7 @@
 import createReducer from "../../utils/createReducer";
 import standardDeck from "../../standardDeck";
 import { GameAction } from "../../types/actions";
+import { Joker } from "../../types/jokerTypes";
 
 export type boardPositions = "hand" | "board" | "discard" | "deck";
 
@@ -17,6 +18,7 @@ export interface State {
   gameStarted: boolean;
   allowInput: boolean;
   cards: Card[];
+  jokers: Joker[];  // Player's equipped jokers (max 5)
 }
 
 const gameReducer = createReducer<State, GameAction>({
@@ -26,6 +28,7 @@ const gameReducer = createReducer<State, GameAction>({
       ...state,
       gameStarted: true,
       allowInput: true,
+      jokers: [],  // Start with no jokers equipped
       cards: standardDeck.map((card) => ({
         id: Math.floor(Math.random() * 1000000),
         label: card.label,
@@ -140,6 +143,33 @@ const gameReducer = createReducer<State, GameAction>({
     return {
       ...state,
       cards: [...handCards, ...otherCards],
+    };
+  },
+
+  // Joker management actions
+  EQUIP_JOKER: (state: State, action): State => {
+    // Only allow up to 5 jokers
+    if (state.jokers.length >= 5) {
+      console.warn("Cannot equip joker - maximum of 5 jokers allowed");
+      return state;
+    }
+    return {
+      ...state,
+      jokers: [...state.jokers, action.payload.joker],
+    };
+  },
+
+  UNEQUIP_JOKER: (state: State, action): State => {
+    return {
+      ...state,
+      jokers: state.jokers.filter(joker => joker.id !== action.payload.jokerId),
+    };
+  },
+
+  CLEAR_EQUIPPED_JOKERS: (state: State): State => {
+    return {
+      ...state,
+      jokers: [],
     };
   },
 });

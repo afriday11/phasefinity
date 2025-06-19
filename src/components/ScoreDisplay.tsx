@@ -24,7 +24,13 @@ function ScoreDisplay({ score }: ScoreDisplayProps) {
           </div>
           {score.bonusDescription && (
             <div className="score-item score-item--bonus">
-              <span className="score-value">{score.bonusDescription}</span>
+              <div className="bonus-breakdown">
+                {score.bonusDescription.split(' • ').map((bonus, index) => (
+                  <div key={index} className="bonus-line">
+                    {bonus}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

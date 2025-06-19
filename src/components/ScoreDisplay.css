@@ -55,4 +55,18 @@
   font-style: italic;
   font-size: 0.9em;
   margin-top: 5px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.bonus-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+}
+
+.bonus-line {
+  padding: 2px 0;
+  line-height: 1.3;
 }

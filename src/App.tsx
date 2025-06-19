@@ -5,7 +5,10 @@ import GameControls from './components/GameControls'
 import ScoreDisplay from './components/ScoreDisplay'
 import { LevelDisplay } from './components/LevelDisplay'
 import LevelCompletionPopup from './components/LevelCompletionPopup'
+import JokerDisplay from './components/JokerDisplay'
 import { useAppContext } from './store/store'
+// Import debug utilities for testing jokers
+import { addTestJokers } from './utils/debugJokers'
 
 // App is the main component that renders the game.
 // It uses the useAppContext hook to get the game state and dispatch actions.
@@ -23,8 +26,8 @@ interface PopupState {
 }
 
 function App() {
-  const { state } = useAppContext();
-  const { score, level } = state;
+  const { state, dispatch } = useAppContext();
+  const { score, level, game } = state;
   
   const [popupState, setPopupState] = useState<PopupState>({
     isVisible: false,
@@ -73,6 +76,25 @@ function App() {
     setPopupState(prev => ({ ...prev, isVisible: false }));
   };
 
+  // Set up debug functions globally for console access
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Make debug functions available globally with proper dispatch context
+      (window as typeof window & { 
+        debugGame: {
+          addTestJokers: () => void;
+          state: typeof state;
+          dispatch: typeof dispatch;
+        }
+      }).debugGame = {
+        addTestJokers: () => addTestJokers(dispatch),
+        state,
+        dispatch
+      };
+      console.log('🔧 Debug utilities available: window.debugGame');
+    }
+  }, [dispatch, state]);
+
   return (
     <>
       <div className="title-container">
@@ -80,6 +102,7 @@ function App() {
         <ScoreDisplay score={score} />
         <LevelDisplay levelState={level} currentScore={score.currentScore} />
       </div>
+      <JokerDisplay equippedJokers={game.jokers} />
       <GameBoard />
       <GameControls />
       

@@ -3,6 +3,8 @@ import { HandType, ScoreCalculation, BonusResult } from "../types/scoreTypes";
 import gameConfig from "../config/gameConfig.json";
 import { HandLevelsState } from "../store/handLevels/handLevelsSlice";
 import * as handLevelManager from './handLevelManager';
+import { Joker } from "../types/jokerTypes";
+import { applyJokers } from "./jokerService";
 
 /**
  * Calculates the score for a given hand.
@@ -11,9 +13,15 @@ import * as handLevelManager from './handLevelManager';
  * @param handType The type of hand being played.
  * @param cards The cards in the hand.
  * @param handLevelsState The current state of hand levels.
+ * @param equippedJokers Array of jokers currently equipped by the player.
  * @returns A detailed score calculation object.
  */
-export function calculateScore(handType: HandType, cards: Card[], handLevelsState: HandLevelsState): ScoreCalculation {
+export function calculateScore(
+  handType: HandType, 
+  cards: Card[], 
+  handLevelsState: HandLevelsState,
+  equippedJokers: Joker[] = []
+): ScoreCalculation {
   const handConfig = gameConfig.hands[handType];
   const baseChips = handConfig.baseChips || 0;
   const totalMultiplier = handLevelManager.getTotalMultiplier(handLevelsState, handType);
@@ -45,6 +53,18 @@ export function calculateScore(handType: HandType, cards: Card[], handLevelsStat
   }
   if (otherBonuses.description) {
     bonusDescriptions.push(otherBonuses.description);
+  }
+
+  // Step 4: Apply joker bonuses (left-to-right execution)
+  if (equippedJokers.length > 0) {
+    const jokerResult = applyJokers(currentChips, currentMultiplier, equippedJokers, cards, handType);
+    currentChips = jokerResult.chips;
+    currentMultiplier = jokerResult.mult;
+    
+    // Add joker bonus descriptions
+    jokerResult.bonusDescriptions.forEach(desc => {
+      bonusDescriptions.push(desc);
+    });
   }
 
   // Calculate final score

@@ -3,6 +3,7 @@
 import { Card } from "../store/game/gameSlice";
 import { HandType } from "./scoreTypes";
 import { JokerConfig } from "./economyTypes";
+import { Joker } from "./jokerTypes";
 
 // Game Actions
 interface InitializeGameAction { type: 'INITIALIZE_GAME'; }
@@ -15,6 +16,9 @@ interface DrawCardsAction { type: 'DRAW_CARDS'; payload: number; }
 interface ShuffleDeckAction { type: 'SHUFFLE_DECK'; }
 interface ResetGameAction { type: 'RESET'; }
 interface SortHandAction { type: 'SORT_HAND'; }
+interface EquipJokerAction { type: 'EQUIP_JOKER'; payload: { joker: Joker }; }
+interface UnequipJokerAction { type: 'UNEQUIP_JOKER'; payload: { jokerId: number }; }
+interface ClearEquippedJokersAction { type: 'CLEAR_EQUIPPED_JOKERS'; }
 
 export type GameAction =
   | InitializeGameAction
@@ -26,7 +30,10 @@ export type GameAction =
   | DrawCardsAction
   | ShuffleDeckAction
   | ResetGameAction
-  | SortHandAction;
+  | SortHandAction
+  | EquipJokerAction
+  | UnequipJokerAction
+  | ClearEquippedJokersAction;
 
 // Score Actions
 interface UpdateScoreAction {

@@ -35,6 +35,7 @@ const initialState: AppState = {
     gameStarted: false,
     allowInput: false,
     cards: [],
+    jokers: [],
   },
   score: initialScoreState,
   level: initialLevelState,
@@ -58,6 +59,9 @@ const rootReducer = (state: AppState, action: AppAction): AppState => {
     case 'SHUFFLE_DECK':
     case 'RESET':
     case 'SORT_HAND':
+    case 'EQUIP_JOKER':
+    case 'UNEQUIP_JOKER':
+    case 'CLEAR_EQUIPPED_JOKERS':
       return {
         ...state,
         game: gameReducer(state.game, action as GameAction),

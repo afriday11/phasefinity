@@ -1,7 +1,7 @@
 import delay from "../utils/delay";
 import { useAppContext } from '../store/store';
 import { evaluateHand } from '../services/handEvaluator';
-import { calculateScore } from '../services/scoreManager';
+import { calculateScore } from '../services/scoreCalculator';
 import { checkLevelComplete, checkGameOver } from '../services/levelService';
 import { grantLevelCompletionCoins } from '../services/coinService';
 
@@ -55,8 +55,8 @@ function GameControls() {
     // First, dispatch that the hand has been played to track stats.
     dispatch({ type: 'INCREMENT_TIMES_PLAYED', payload: { handType } });
 
-    // Then, calculate the score for the hand.
-    const calculation = calculateScore(handType, selectedCards, handLevels);
+    // Then, calculate the score for the hand (including joker bonuses).
+    const calculation = calculateScore(handType, selectedCards, handLevels, game.jokers);
 
     // Update the score in the application state.
     dispatch({
