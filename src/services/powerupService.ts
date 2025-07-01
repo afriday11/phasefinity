@@ -9,6 +9,7 @@
 import { Joker } from '../types/jokerTypes';
 import { Powerup, JokerPowerup } from '../types/powerupTypes';
 import { getRandomJokers } from './jokerService';
+import { getPhase10HandTypeName } from '../utils/handTypeDisplay';
 import { GameAction } from '../types/actions';
 
 /**
@@ -27,7 +28,7 @@ function jokerToPowerup(joker: Joker): JokerPowerup {
 }
 
 /**
- * Generates a human-readable description for a joker
+ * Generates a human-readable description for a joker using Phase 10 terminology
  * @param joker The joker to describe
  * @returns Description string for the powerup screen
  */
@@ -40,7 +41,7 @@ function getJokerDescription(joker: Joker): string {
     case 'onScoreSuit':
       return `Adds +${joker.value} ${rewardText} per ${joker.suit} card in hand`;
     case 'onHandType':
-      return `Adds +${joker.value} ${rewardText} when playing a ${joker.handType}`;
+      return `Adds +${joker.value} ${rewardText} when playing a ${getPhase10HandTypeName(joker.handType!)}`;
     default:
       return `Adds +${joker.value} ${rewardText}`;
   }

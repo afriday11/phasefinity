@@ -7,6 +7,7 @@
  */
 
 import { Joker } from "../types/jokerTypes";
+import { getPhase10HandTypeName } from "../utils/handTypeDisplay";
 import "./JokerDisplay.css";
 
 interface JokerDisplayProps {
@@ -53,7 +54,7 @@ function JokerDisplay({ equippedJokers }: JokerDisplayProps) {
 /**
  * Helper function to generate readable trigger text for jokers
  * @param joker The joker to generate trigger text for
- * @returns Human-readable description of when the joker triggers
+ * @returns Human-readable description of when the joker triggers using Phase 10 terminology
  */
 function getJokerTriggerText(joker: Joker): string {
   switch (joker.trigger) {
@@ -62,7 +63,7 @@ function getJokerTriggerText(joker: Joker): string {
     case 'onScoreSuit':
       return `Per ${joker.suit} card`;
     case 'onHandType':
-      return `On ${joker.handType}`;
+      return `On ${getPhase10HandTypeName(joker.handType!)}`;
     default:
       return 'Unknown trigger';
   }

@@ -6,6 +6,7 @@ import * as handLevelManager from './handLevelManager';
 import { Joker } from "../types/jokerTypes";
 import { applyJokers } from "./jokerService";
 import { evaluateHand } from "./handEvaluator";
+import { getPhase10HandTypeName } from "../utils/handTypeDisplay";
 
 /**
  * Calculates the score for a given hand.
@@ -36,7 +37,7 @@ export function calculateScore(
   const bonusDescriptions: string[] = [];
 
   // Step 1: Apply base hand score
-  bonusDescriptions.push(`Base hand: ${handType} (${currentChips} chips)`);
+  bonusDescriptions.push(`Base hand: ${getPhase10HandTypeName(handType)} (${currentChips} chips)`);
 
   // Step 2: Calculate card value bonuses - ONLY for contributing cards
   const cardBonuses = calculateCardValueBonuses(contributingCards);
