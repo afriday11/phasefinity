@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useWindowSize from "../hooks/useWindowSize";
-import Card from "./Card";
+import Card from "./CardPhaseTen";
 import { useAppContext } from "../store/store";
 import { Card as CardType } from "../store/game/gameSlice";
 import useDealer from "../hooks/useDealer";
@@ -36,14 +36,14 @@ function GameBoard() {
   const cardsToRender = [
     ...Hand({
       cards: handCards,
-      yOffset: 350,
+      yOffset: 240,
       splayed: true,
       anchor: "bottom",
       onClick: handleCardClick,
     }),
     ...Hand({
       cards: boardCards,
-      yOffset: 700, // placement of cards after they are played
+      yOffset: 600, // placement of cards after they are played
       splayed: true,
       anchor: "bottom",
     }),

@@ -53,4 +53,4 @@ const standardDeck = [
   { label: "A", suit: "diamonds", suitEmoji: "♦️", value: 14 },
 ];
 
-export default standardDeck;
+export default [...standardDeck, ...standardDeck];
