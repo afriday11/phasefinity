@@ -39,6 +39,7 @@ const initialState: AppState = {
     allowInput: false,
     cards: [],
     jokers: [],
+    nextCardId: 1,
   },
   score: initialScoreState,
   level: initialLevelState,

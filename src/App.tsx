@@ -10,7 +10,7 @@ import PowerupScreen from './components/PowerupScreen'
 import { useAppContext } from './store/store'
 // Import debug utilities for testing jokers
 import { addTestJokers } from './utils/debugJokers'
-import { generatePowerupOptions, applySelectedPowerup } from './services/powerupService'
+import { generatePowerupOptions, applySelectedPowerup, handleSkipPowerups } from './services/powerupService'
 import { Powerup } from './types/powerupTypes'
 
 // App is the main component that renders the game.
@@ -96,8 +96,9 @@ function App() {
     dispatch({ type: 'SELECT_POWERUP', payload: { powerup: selectedPowerup } });
   };
 
-  const handleSkipPowerups = () => {
-    dispatch({ type: 'SKIP_POWERUPS' });
+  const handleSkipPowerupsClick = () => {
+    handleSkipPowerups(dispatch); // Deal cards for new level
+    dispatch({ type: 'SKIP_POWERUPS' }); // Close powerup screen
   };
 
   // Set up debug functions globally for console access
@@ -119,17 +120,16 @@ function App() {
     }
   }, [dispatch, state]);
 
-  // Trigger powerups for the first level when player actually starts playing (cards are dealt)
+  // Trigger powerups for the first level when player starts the game
   useEffect(() => {
-    const handCards = game.cards.filter(card => card.position === "hand");
-    const hasCardsInHand = handCards.length > 0;
+    const hasCards = game.cards.length > 0; // Check if game has been initialized
     
     // Trigger powerups when:
-    // 1. Player has cards in hand (meaning they clicked "New Game")
+    // 1. Game has been initialized (cards exist but not in hand yet)
     // 2. It's level 1 
     // 3. No powerup screen is currently showing
     // 4. No powerups have been generated yet
-    if (hasCardsInHand && level.currentLevel === 1 && !powerup.isVisible && powerup.availablePowerups.length === 0) {
+    if (hasCards && level.currentLevel === 1 && !powerup.isVisible && powerup.availablePowerups.length === 0) {
       setTimeout(async () => {
         const powerupOptions = await generatePowerupOptions(game.jokers, level.currentLevel);
         if (powerupOptions.length > 0) {
@@ -138,9 +138,9 @@ function App() {
             payload: { powerups: powerupOptions }
           });
         }
-      }, 500); // Short delay to let cards finish dealing
+      }, 500); // Short delay to let game initialization complete
     }
-  }, [game.cards, level.currentLevel, powerup.isVisible, powerup.availablePowerups.length, dispatch, game.jokers]);
+  }, [game.cards.length, level.currentLevel, powerup.isVisible, powerup.availablePowerups.length, dispatch, game.jokers]);
 
   return (
     <>
@@ -166,7 +166,7 @@ function App() {
         isVisible={powerup.isVisible}
         availablePowerups={powerup.availablePowerups}
         onSelectPowerup={handleSelectPowerup}
-        onSkip={handleSkipPowerups}
+        onSkip={handleSkipPowerupsClick}
         isFirstLevel={level.currentLevel === 1}
       />
     </>

@@ -108,12 +108,12 @@ function GameControls() {
       
       dispatch({ type: 'NEXT_LEVEL' });
       
-      // FIXED: Reset everything for the new level
-      console.log("🔄 Resetting for new level: score, board, and dealing new hand");
+      // FIXED: Reset everything for the new level but DON'T deal cards yet
+      // Cards will be dealt after powerup selection in powerupService.ts
+      console.log("🔄 Resetting for new level: score and board (cards will be dealt after powerup selection)");
       dispatch({ type: 'RESET_SCORE' }); // Reset score to 0 for new level
-      dispatch({ type: 'RESET' }); // Move all cards back to deck
-      dispatch({ type: 'SHUFFLE_DECK' }); // Shuffle for variety
-      dispatch({ type: 'DRAW_CARDS', payload: 8 }); // Deal fresh hand of 8 cards
+      dispatch({ type: 'RESET' }); // Move all cards back to deck (including board cards)
+      // REMOVED: Don't shuffle or deal cards here - wait for powerup selection
     } else {
       // Check if game is over (no more turns and didn't reach required score)
       const turnsAfterUse = level.turnsRemaining - 1;
@@ -149,13 +149,12 @@ function GameControls() {
   function handleResetGame() {
     console.log("🎮 New Game button clicked! Starting game...");
     dispatch({ type: "INITIALIZE_GAME" });
-    dispatch({ type: "SHUFFLE_DECK" });
     dispatch({ type: 'RESET_LEVEL' });
     dispatch({ type: 'RESET_SCORE' });
     dispatch({ type: 'RESET_HAND_LEVELS' });
     dispatch({ type: 'RESET_ECONOMY' });
-    dispatch({ type: "DRAW_CARDS", payload: 8 });
-    console.log("🃏 Dealt 8 cards to hand");
+    // FIXED: Don't shuffle or deal cards immediately - let powerup screen handle this for level 1
+    console.log("🃏 Game initialized - cards will be shuffled and dealt after powerup selection");
   }
 
   function renderButtons() {

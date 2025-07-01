@@ -12,17 +12,20 @@ function useDealer(cardState: Card[]) {
   useEffect(() => {
     if (waiting) return;
 
+    // Check if any cards have changed position/state
     for (let i = 0; i < cardState.length; i++) {
-      const match = cards.find((card) => card.id === cardState[i].id);
-      if (match) {
+      const currentCard = cardState[i];
+      const localCard = cards.find((card) => card.id === currentCard.id);
+      
+      if (localCard) {
         // if this card is identical as the one in the local state, skip it
-        if (compareCars(match, cardState[i])) continue;
+        if (compareCars(localCard, currentCard)) continue;
 
-        // Update the local state with the new card position
+        // Update the local state with the new card position (by ID, not index)
         playSound();
         setCards(
-          cards.map((card, index) => {
-            if (index === i) return cardState[i];
+          cards.map((card) => {
+            if (card.id === currentCard.id) return currentCard;
             return card;
           })
         );
@@ -37,8 +40,12 @@ function useDealer(cardState: Card[]) {
         // and let the next useEffect call pick up where we left off
         return;
       }
-      // start the card in the deck if we've never seen it before
-      return setCards(cardState.map((card) => ({ ...card, position: "deck" })));
+    }
+    
+    // If we get here, all cards match or we need to initialize with the new state
+    if (cards.length !== cardState.length) {
+      console.log("🔄 Initializing dealer with new card state");
+      setCards([...cardState]);
     }
   }, [cardState, cards, waiting]);
 

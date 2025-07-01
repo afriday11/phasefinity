@@ -80,4 +80,4 @@ function createGameDeck() {
   }
 }
 
-export default createGameDeck();
+export default createGameDeck;

@@ -20,6 +20,9 @@ function GameBoard() {
 
   useWindowSize();
 
+  // Use isDealing to prevent interactions during card animations
+  const allowCardInteractions = !isDealing;
+
   // We derive the different card piles from the single source of truth in the game state.
   const handCards = allCards.filter((card) => card.position === "hand");
   const boardCards = allCards.filter((card) => card.position === "board");
@@ -27,6 +30,9 @@ function GameBoard() {
   const deckCards = allCards.filter((card) => card.position === "deck");
 
   const handleCardClick = (card: CardType) => {
+    // Don't allow card selection during dealing animations
+    if (!allowCardInteractions) return;
+    
     dispatch({
       type: "TOGGLE_CARD_SELECTION",
       payload: { id: card.id },

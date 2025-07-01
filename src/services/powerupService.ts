@@ -75,6 +75,7 @@ export async function generatePowerupOptions(
 /**
  * Applies a selected powerup to the game state
  * Dispatches the appropriate actions based on powerup type
+ * Also deals the starting hand for the new level
  * 
  * @param powerup The powerup the player selected
  * @param dispatch Function to dispatch actions to the store
@@ -93,4 +94,21 @@ export function applySelectedPowerup(powerup: Powerup, dispatch: (action: GameAc
     default:
       console.warn(`Unknown powerup type: ${powerup.type}`);
   }
+  
+  // Shuffle deck then deal cards for the new level after powerup selection
+  console.log('🔀 Shuffling deck before dealing cards');
+  dispatch({ type: 'SHUFFLE_DECK' });
+  console.log('🃏 Dealing 8 cards for new level after powerup selection');
+  dispatch({ type: 'DRAW_CARDS', payload: 8 });
+}
+
+/**
+ * Handles skipping powerups and deals cards for the new level
+ * 
+ * @param dispatch Function to dispatch actions to the store
+ */
+export function handleSkipPowerups(dispatch: (action: GameAction) => void): void {
+  console.log('⏭️ Skipped powerups, shuffling deck then dealing cards for new level');
+  dispatch({ type: 'SHUFFLE_DECK' });
+  dispatch({ type: 'DRAW_CARDS', payload: 8 });
 } 

@@ -1,9 +1,17 @@
 import createReducer from "../../utils/createReducer";
-import standardDeck from "../../standardDeck";
+import createGameDeck from "../../standardDeck";
 import { GameAction } from "../../types/actions";
 import { Joker } from "../../types/jokerTypes";
 
 export type boardPositions = "hand" | "board" | "discard" | "deck";
+
+// Type for the raw deck card before adding game state
+interface DeckCard {
+  label: string;
+  value: number;
+  suit: string;
+  suitEmoji: string;
+}
 
 export interface Card {
   id: number;
@@ -19,18 +27,22 @@ export interface State {
   allowInput: boolean;
   cards: Card[];
   jokers: Joker[];  // Player's equipped jokers (max 5)
+  nextCardId: number; // Sequential card ID counter to prevent duplicates
 }
 
 const gameReducer = createReducer<State, GameAction>({
   INITIALIZE_GAME: (state: State): State => {
     console.log("🎯 INITIALIZE_GAME action processing...");
+    let cardId = 1; // Start with ID 1 for predictable, unique IDs
+    const freshDeck = createGameDeck(); // Create a fresh deck each time
     const newState = {
       ...state,
       gameStarted: true,
       allowInput: true,
       jokers: [],  // Start with no jokers equipped
-      cards: standardDeck.map((card) => ({
-        id: Math.floor(Math.random() * 1000000),
+      nextCardId: cardId + freshDeck.length, // Set next available ID
+      cards: freshDeck.map((card: DeckCard) => ({
+        id: cardId++, // Use sequential IDs to prevent duplicates
         label: card.label,
         value: card.value,
         suit: card.suit,
@@ -40,7 +52,8 @@ const gameReducer = createReducer<State, GameAction>({
     };
     console.log("🎯 INITIALIZE_GAME complete:", { 
       gameStarted: newState.gameStarted, 
-      cardCount: newState.cards.length 
+      cardCount: newState.cards.length,
+      nextCardId: newState.nextCardId 
     });
     return newState;
   },
