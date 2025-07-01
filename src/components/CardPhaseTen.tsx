@@ -108,9 +108,8 @@ function cardRemap(card: CardType) {
   if (card.label === "Q") {
     remappedCard.label = "12";
   }
-  if (card.label === "K") {
-    remappedCard.label = "WILD";
-  }
+  // Note: Kings (K) are not included in Phase 10 mode deck
+  // so they no longer need to be converted to WILD cards
   return remappedCard;
 }
 

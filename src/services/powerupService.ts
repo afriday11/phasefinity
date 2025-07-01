@@ -9,7 +9,7 @@
 import { Joker } from '../types/jokerTypes';
 import { Powerup, JokerPowerup } from '../types/powerupTypes';
 import { getRandomJokers } from './jokerService';
-import { getPhase10HandTypeName } from '../utils/handTypeDisplay';
+import { getHandTypeName, getSuitName } from '../utils/handTypeDisplay';
 import { GameAction } from '../types/actions';
 
 /**
@@ -39,9 +39,9 @@ function getJokerDescription(joker: Joker): string {
     case 'always':
       return `Adds +${joker.value} ${rewardText} to every hand`;
     case 'onScoreSuit':
-      return `Adds +${joker.value} ${rewardText} per ${joker.suit} card in hand`;
+      return `Adds +${joker.value} ${rewardText} per ${getSuitName(joker.suit!)} card in hand`;
     case 'onHandType':
-      return `Adds +${joker.value} ${rewardText} when playing a ${getPhase10HandTypeName(joker.handType!)}`;
+      return `Adds +${joker.value} ${rewardText} when playing a ${getHandTypeName(joker.handType!)}`;
     default:
       return `Adds +${joker.value} ${rewardText}`;
   }

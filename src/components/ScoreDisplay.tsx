@@ -1,6 +1,6 @@
 import { ScoreState } from "../types/scoreTypes";
 import { useAppContext } from "../store/store";
-import { getPhase10HandTypeName } from "../utils/handTypeDisplay";
+import { getHandTypeName } from "../utils/handTypeDisplay";
 import "./ScoreDisplay.css";
 
 interface ScoreDisplayProps {
@@ -51,7 +51,7 @@ function ScoreDisplay({ score }: ScoreDisplayProps) {
       </div>
       {score.lastPlayScore > 0 && score.lastPlayType && (
         <div className="score-item score-item--highlight">
-          <span className="score-label">{getPhase10HandTypeName(score.lastPlayType)}:</span>
+          <span className="score-label">{getHandTypeName(score.lastPlayType)}:</span>
           <span className="score-value">+{score.lastPlayScore}</span>
         </div>
       )}

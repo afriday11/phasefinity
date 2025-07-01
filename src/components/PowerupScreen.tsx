@@ -10,7 +10,7 @@
 
 import { Powerup } from "../types/powerupTypes";
 import { Joker } from "../types/jokerTypes";
-import { getPhase10HandTypeName } from "../utils/handTypeDisplay";
+import { getHandTypeName, getSuitName } from "../utils/handTypeDisplay";
 import "./PowerupScreen.css";
 
 interface PowerupScreenProps {
@@ -74,9 +74,9 @@ function getJokerTriggerText(joker: Joker): string {
     case 'always':
       return 'Always active';
     case 'onScoreSuit':
-      return `Per ${joker.suit} card`;
+      return `Per ${getSuitName(joker.suit!)} card`;
     case 'onHandType':
-      return `On ${getPhase10HandTypeName(joker.handType!)}`;
+      return `On ${getHandTypeName(joker.handType!)}`;
     default:
       return 'Unknown trigger';
   }

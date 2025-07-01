@@ -3,10 +3,10 @@ import { ScoreCalculation, BonusResult } from "../types/scoreTypes";
 import gameConfig from "../config/gameConfig.json";
 import { HandLevelsState } from "../store/handLevels/handLevelsSlice";
 import * as handLevelManager from './handLevelManager';
-import { Joker } from "../types/jokerTypes";
+import { Joker, Suit } from "../types/jokerTypes";
 import { applyJokers } from "./jokerService";
 import { evaluateHand } from "./handEvaluator";
-import { getPhase10HandTypeName } from "../utils/handTypeDisplay";
+import { getHandTypeName, getSuitName } from "../utils/handTypeDisplay";
 
 /**
  * Calculates the score for a given hand.
@@ -37,7 +37,7 @@ export function calculateScore(
   const bonusDescriptions: string[] = [];
 
   // Step 1: Apply base hand score
-  bonusDescriptions.push(`Base hand: ${getPhase10HandTypeName(handType)} (${currentChips} chips)`);
+  bonusDescriptions.push(`Base hand: ${getHandTypeName(handType)} (${currentChips} chips)`);
 
   // Step 2: Calculate card value bonuses - ONLY for contributing cards
   const cardBonuses = calculateCardValueBonuses(contributingCards);
@@ -135,7 +135,7 @@ function calculateOtherBonuses(cards: Card[]): BonusResult {
     const suit = cards[0].suit as keyof typeof gameConfig.bonuses.suitBonus;
     if (gameConfig.bonuses.suitBonus[suit]) {
       result.chipBonus = (result.chipBonus || 0) + gameConfig.bonuses.suitBonus[suit];
-      result.description += `${suit} suit bonus! `;
+      result.description += `${getSuitName(cards[0].suit as Suit)} suit bonus! `;
     }
   }
 
