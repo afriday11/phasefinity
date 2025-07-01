@@ -3,6 +3,7 @@ import useWindowSize from "../hooks/useWindowSize";
 import Card from "./Card";
 import { useAppContext } from "../store/store";
 import { Card as CardType } from "../store/game/gameSlice";
+import useDealer from "../hooks/useDealer";
 
 // GameBoard is the main component that renders the game board.
 // It uses the useAppContext hook to get the game state and dispatch actions.
@@ -14,7 +15,8 @@ import { Card as CardType } from "../store/game/gameSlice";
 
 function GameBoard() {
   const { state, dispatch } = useAppContext();
-  const { cards: allCards } = state.game;
+  const { cards: StateCards } = state.game;
+  const { cards: allCards, isDealing } = useDealer(StateCards);
 
   useWindowSize();
 
@@ -106,7 +108,7 @@ function Hand({
     const y = e.clientY - rect.top;
 
     setDragging({ card, offsetX: x, offsetY: y, x, y, dragging: false });
-    
+
     // Call onClick immediately on mouse down for responsive feel
     onClick?.(card);
 
