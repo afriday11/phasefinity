@@ -1,43 +1,54 @@
-import { Card } from "../reducers/gameReducer";
+import { Card } from "../store/game/gameSlice";
 import { HandType } from "../types/scoreTypes";
 
-interface HandEvaluation {
+/**
+ * This module provides pure functions for evaluating poker hands.
+ */
+
+interface HandEvaluationResult {
   handType: HandType;
-  score: number;
   highCard?: number;
 }
 
 function hasStraight(values: number[]): boolean {
-  if (values.length < 5) return false; // A straight requires at least 5 cards
+  if (values.length < 5) return false;
 
-  const sorted = [...new Set(values)].sort((a, b) => a - b); // Remove duplicates and sort
+  const sorted = [...new Set(values)].sort((a, b) => a - b);
   for (let i = 0; i <= sorted.length - 5; i++) {
     if (sorted[i + 4] - sorted[i] === 4) {
       return true;
     }
   }
+  // Ace-low straight check
+  if (
+    sorted.includes(14) &&
+    sorted.includes(2) &&
+    sorted.includes(3) &&
+    sorted.includes(4) &&
+    sorted.includes(5)
+  ) {
+    return true;
+  }
   return false;
 }
 
 function hasFlush(cards: Card[]): boolean {
-  if (cards.length < 5) return false; // A flush requires at least 5 cards
+  if (cards.length < 5) return false;
   return cards.every((card) => card.suit === cards[0].suit);
 }
 
-export function isValidHandSize(cards: Card[]): boolean {
-  const validHandSizes = [2, 3, 4, 5]; // Pairs need 2, three of a kind needs 3, etc.
-  return validHandSizes.includes(cards.length);
-}
-
-export function evaluateHand(cards: Card[]): HandEvaluation {
+/**
+ * Evaluates a hand of cards to determine its poker rank.
+ * @param cards The cards to evaluate.
+ * @returns An object containing the hand type and high card value if applicable.
+ */
+export function evaluateHand(cards: Card[]): HandEvaluationResult {
   if (cards.length === 0) {
-    return { handType: "highCard", score: 0 };
+    return { handType: "highCard" };
   }
 
-  // Get the highest card value for scoring
   const highestCard = Math.max(...cards.map((card) => card.value));
 
-  // Count occurrences of each value
   const valueCounts = cards.reduce((acc, card) => {
     acc[card.value] = (acc[card.value] || 0) + 1;
     return acc;
@@ -46,67 +57,33 @@ export function evaluateHand(cards: Card[]): HandEvaluation {
   const values = Object.values(valueCounts);
   const uniqueValues = Object.keys(valueCounts).map(Number);
 
-  // Check for different hand types
   const isStraight = hasStraight(uniqueValues);
   const isFlush = hasFlush(cards);
 
-  // Evaluate hand type from best to worst
+  let handType: HandType;
+
   if (isStraight && isFlush) {
-    return {
-      handType: "straightFlush",
-      score: calculateScore("straightFlush"),
-    };
+    handType = "straightFlush";
+  } else if (values.includes(4)) {
+    handType = "fourOfAKind";
+  } else if (values.includes(3) && values.includes(2)) {
+    handType = "fullHouse";
+  } else if (isFlush) {
+    handType = "flush";
+  } else if (isStraight) {
+    handType = "straight";
+  } else if (values.includes(3)) {
+    handType = "threeOfAKind";
+  } else if (values.filter((count) => count === 2).length === 2) {
+    handType = "twoPair";
+  } else if (values.includes(2)) {
+    handType = "pair";
+  } else {
+    handType = "highCard";
   }
 
-  if (values.includes(4)) {
-    return { handType: "fourOfAKind", score: calculateScore("fourOfAKind") };
-  }
-
-  if (values.includes(3) && values.includes(2)) {
-    return { handType: "fullHouse", score: calculateScore("fullHouse") };
-  }
-
-  if (isFlush) {
-    return { handType: "flush", score: calculateScore("flush") };
-  }
-
-  if (isStraight) {
-    return { handType: "straight", score: calculateScore("straight") };
-  }
-
-  if (values.includes(3)) {
-    return { handType: "threeOfAKind", score: calculateScore("threeOfAKind") };
-  }
-
-  if (values.filter((count) => count === 2).length === 2) {
-    return { handType: "twoPair", score: calculateScore("twoPair") };
-  }
-
-  if (values.includes(2)) {
-    return { handType: "pair", score: calculateScore("pair") };
-  }
-
-  // Fallback to high card if no other hand type matches
   return {
-    handType: "highCard",
-    score: calculateScore("highCard"),
-    highCard: highestCard,
+    handType: handType,
+    highCard: handType === "highCard" ? highestCard : undefined,
   };
-}
-
-export function calculateScore(handType: HandType): number {
-  const scoreValues = {
-    highCard: 1, // Add a base score for highCard if needed
-    pair: 10,
-    twoPair: 20,
-    threeOfAKind: 30,
-    straight: 40,
-    flush: 50,
-    fullHouse: 60,
-    fourOfAKind: 70,
-    straightFlush: 100,
-  };
-
-  // Optionally use highestCard for additional scoring logic
-  return scoreValues[handType] || 0;
 }

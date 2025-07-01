@@ -42,3 +42,31 @@
     transform: translateY(0);
   }
 }
+
+.score-calculation {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.score-item--bonus {
+  color: #ffd700;
+  font-style: italic;
+  font-size: 0.9em;
+  margin-top: 5px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.bonus-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+}
+
+.bonus-line {
+  padding: 2px 0;
+  line-height: 1.3;
+}

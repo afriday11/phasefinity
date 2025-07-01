@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card } from "../reducers/gameReducer";
+import { Card } from "../store/game/gameSlice";
 import playSound from "../utils/playDealSound";
 
 // this hook is used to animate the cards when they are moved from one position to another.
