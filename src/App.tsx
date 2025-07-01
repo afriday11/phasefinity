@@ -167,6 +167,7 @@ function App() {
         availablePowerups={powerup.availablePowerups}
         onSelectPowerup={handleSelectPowerup}
         onSkip={handleSkipPowerups}
+        isFirstLevel={level.currentLevel === 1}
       />
     </>
   )

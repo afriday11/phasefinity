@@ -3,6 +3,8 @@
  * 
  * This component displays a selection screen with 3 randomly chosen powerups
  * at the beginning of each level. Players can click to select a powerup or skip.
+ * The header text changes based on whether it's the first level ("Begin Game") 
+ * or a subsequent level ("Level Cleared!").
  * It's designed to be extensible for future powerup types beyond jokers.
  */
 
@@ -15,15 +17,18 @@ interface PowerupScreenProps {
   availablePowerups: Powerup[];
   onSelectPowerup: (powerup: Powerup) => void;
   onSkip: () => void;
+  isFirstLevel?: boolean;
 }
 
-function PowerupScreen({ isVisible, availablePowerups, onSelectPowerup, onSkip }: PowerupScreenProps) {
+function PowerupScreen({ isVisible, availablePowerups, onSelectPowerup, onSkip, isFirstLevel = false }: PowerupScreenProps) {
   if (!isVisible) return null;
 
   return (
     <div className="powerup-screen-overlay">
       <div className="powerup-screen">
-        <h1 className="powerup-header">Level Cleared!</h1>
+        <h1 className="powerup-header">
+          {isFirstLevel ? "Begin Game" : "Level Cleared!"}
+        </h1>
         <h2 className="powerup-title">Choose a Powerup</h2>
         
         <div className="powerup-options">
